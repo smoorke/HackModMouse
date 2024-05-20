@@ -1,9 +1,6 @@
 # HackModMouse
  show mousecursor in hackmud
 
-# HackModMouse
- show mousecursor in hackmud
-
 
 ![contextmenu](https://github.com/smoorke/HackModMouse/assets/24803657/919671ac-5fbc-419a-a472-9d0bbdce6c74)
 
