@@ -27,8 +27,8 @@ Public Class frmMain
     End Sub
 
     Private Sub tmrTick_Tick(sender As Object, e As EventArgs) Handles tmrTick.Tick
-        'Attach()
-        Debug.Print($"{mudproc?.MainWindowTitle}:{mudproc?.Id}")
+        Attach()
+        'Debug.Print($"{mudproc?.MainWindowTitle}:{mudproc?.Id}")
     End Sub
 
 #Region "Magic Attach"
