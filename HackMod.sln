@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "HackMod", "HackMod.vbproj", "{A8867250-75F5-4F7C-A4BC-978C3EFA8A29}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A8867250-75F5-4F7C-A4BC-978C3EFA8A29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8867250-75F5-4F7C-A4BC-978C3EFA8A29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8867250-75F5-4F7C-A4BC-978C3EFA8A29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8867250-75F5-4F7C-A4BC-978C3EFA8A29}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E54A2AD3-81A7-46B0-AC4C-E69750A04A32}
+	EndGlobalSection
+EndGlobal
