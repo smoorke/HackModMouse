@@ -2,7 +2,7 @@
  show mousecursor in hackmud
 
 
-![contextmenu](https://github.com/smoorke/HackModMouse/assets/24803657/919671ac-5fbc-419a-a472-9d0bbdce6c74)
+![contextmenu](https://github.com/smoorke/HackModMouse/blob/main/images/contextmenu.png?raw=true)
 
 <sub>this menu is located in your system tray (next to your clock)</sub>
 <br>
@@ -15,5 +15,7 @@
 - sys.configure/xmbutton.click <sub>pressing extramousebutton 1 or 2 instead sends a left click to hackmud</sub>
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<sub>these buttons are also known as back/forward</sub>
+
+- sys.configure/wheel.scroll <sub>scrolling hackmud with it inactive acitivates and brings it to front</sub>
 
 - hackmod.shutdown <sub>closes hackmod</sub>
