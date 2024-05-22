@@ -5,57 +5,108 @@ Public Class frmMain
     Private mH As MouseHook = New MouseHook
     Private appdataHMod As String = IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "hackmod\")
     Private pfc As New PrivateFontCollection
+#Region "StartupSequence"
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
-        'handle theming of the menu
-        cmsTray.Renderer = New ToolStripProfessionalRenderer(New ThemedColorTable)
-        cmsTray.ForeColor = Color.White
+
+        SetMenuTheme(Color.FromArgb(&HFF7AB2F4))
 
         setFont()
 
-        Attach()
+        CursorMagic()
 
-        If My.Settings.xmbclick Then mH.HookMouse() 'send left mousebutton instead of xmb
-        'xmbclick is off by default to have less false positives on viruscanners
+        SetCursorVisibility(My.Settings.showcursor)
+
+        If My.Settings.xmbclick OrElse My.Settings.scrollActivate Then mH.HookMouse() 'send left mousebutton instead of xmb
+        'these are off by default to have less false positives on viruscanners
         'note: when this is enabled debugging lags the mouse a few seconds when hackmod is in break mode
 
+    End Sub
+    Private Sub frmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Try
-            AppActivate(mudproc.Id)
+            If mudproc IsNot Nothing Then AppActivate(mudproc.Id)
         Catch ex As Exception
-            Debug.Print("bab0")
+            Debug.Print("guru meditation #bab0")
         End Try
+    End Sub
+#End Region
 
+#Region "Cursor Magic"
+    Private Sub tmrTick_Tick(sender As Object, e As EventArgs) Handles tmrTick.Tick 'interval 5077 ms
+        If mudproc IsNot Nothing AndAlso mudproc.HasExited Then SysbootToolStripMenuItem.Enabled = True
+        CursorMagic()
+        Debug.Print($"{mudproc?.MainWindowTitle}:{mudproc?.Id}:{hackMudHandle}")
     End Sub
 
-    Private Sub tmrTick_Tick(sender As Object, e As EventArgs) Handles tmrTick.Tick
-        Attach()
-        'Debug.Print($"{mudproc?.MainWindowTitle}:{mudproc?.Id}")
-    End Sub
-
-#Region "Magic Attach"
-    Private Sub Attach()
+    Private Function CursorMagic()
 
         mudproc = Process.GetProcessesByName("hackmud_win").FirstOrDefault
-
         hackMudHandle = If(mudproc?.MainWindowHandle, IntPtr.Zero)
 
-        'set the parent to hackmud, note docs state you should use SetParent
-        '         however we don't do that to make ShowCursor work
-        'if we don't check for the menu being open this bugs it
-        If Not cmsTray.Visible Then SetWindowLong(Me.Handle, GWL_HWNDPARENT, hackMudHandle)
+        'set the parent to hackmud, note docs state you should use SetParent,
+        '         however we don't do that to make ShowCursor work, why this works is a mystery to me.
+        'to be honest i never managed to get SetParent to do the things i want my other projects either.
+        SetWindowLong(Me.Handle, GWL_HWNDPARENT, hackMudHandle)
 
-        'this only works because of the GWL_HWNDPARENT
-        If My.Settings.showcursor AndAlso ShowCursor(True) > 1 Then
-            Do
-            Loop Until ShowCursor(False) <= 1 'we don't want to overflow when we call this func more than once
+    End Function
+
+    Private ShowValue As Integer
+    'this only works because of the GWL_HWNDPARENT
+    Private Sub SetCursorVisibility(visible As Boolean)
+        ' ensure the cursor is visible if the handle is not valid
+        If hackMudHandle = IntPtr.Zero Then visible = True
+
+        ' set visibility and get the current state of the cursor
+        ShowValue = ShowCursor(visible)
+        Debug.Print($"visible:{visible} ShowValue:{ShowValue}")
+
+        'this is a mess
+        If visible Then
+            ' ensure exact value
+            Do While ShowValue <= 0
+                ShowValue = ShowCursor(True)
+                Debug.Print($"ensuring cursor visibility: {ShowValue}")
+            Loop
+            Do While ShowValue > 2
+                ShowValue = ShowCursor(False)
+                Debug.Print($"ensuring exact value: {ShowValue}")
+            Loop
+        Else
+            ' ensure exact value
+            Do While ShowValue > If(My.Settings.showcursor, 1, 0)
+                ShowValue = ShowCursor(False)
+                Debug.Print($"ensuring cursor invisibility: {ShowValue}")
+            Loop
+            Do While ShowValue < -2
+                ShowValue = ShowCursor(True)
+                Debug.Print($"ensuring exact value: {ShowValue}")
+            Loop
         End If
     End Sub
+#End Region
+
+#Region "Hide from alt tab and Taskbar"
     Protected Overrides ReadOnly Property CreateParams As CreateParams
         Get
             Dim cp As CreateParams = MyBase.CreateParams
-            cp.ExStyle = cp.ExStyle Or WindowStylesEx.WS_EX_TOOLWINDOW 'Do not show in taskbar. me.showintaskbar fails due to the GWL_HWNDPARENT
+            cp.ExStyle = cp.ExStyle Or WindowStylesEx.WS_EX_TOOLWINDOW ' showintaskbar fails due to the GWL_HWNDPARENT
             Return cp
         End Get
     End Property
+#End Region
+
+#Region "Menu Theming"
+    Private Sub SetMenuTheme(col As Color)
+        cmsTray.Renderer = New ThemedRenderer(col)
+        SetForeColorRecurse(cmsTray.Items, col)
+    End Sub
+    Private Sub SetForeColorRecurse(collection As ToolStripItemCollection, foreColor As Color)
+        For Each item As ToolStripMenuItem In collection.OfType(Of ToolStripMenuItem) ' Skip separators
+            item.ForeColor = foreColor
+            If item.HasDropDown Then
+                SetForeColorRecurse(item.DropDownItems, foreColor)
+            End If
+        Next
+    End Sub
 #End Region
 
 #Region "Font Setters"
@@ -98,32 +149,38 @@ Public Class frmMain
 
     Private Sub cmsTray_Opening(sender As Object, e As CancelEventArgs) Handles cmsTray.Opening
         SysbootToolStripMenuItem.Enabled = mudproc Is Nothing
+        SetCursorVisibility(True)
     End Sub
-
+    Private Sub cmsTray_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsTray.Closed
+        Debug.Print("systray closed")
+        SetCursorVisibility(My.Settings.showcursor)
+    End Sub
     Private Sub SysconfigureToolStripMenuItem_DropDownOpening(sender As Object, e As EventArgs) Handles SysconfigureToolStripMenuItem.DropDownOpening
         CursorshowToolStripMenuItem.Checked = My.Settings.showcursor
         XmbclickToolStripMenuItem.Checked = My.Settings.xmbclick
+        WheelScrollActivateToolStripMenuItem.Checked = My.Settings.scrollActivate
     End Sub
 
-    Private Sub SysconfigureItemToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CursorshowToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click
+    Private Sub SysconfigureItemToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CursorshowToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click, WheelScrollActivateToolStripMenuItem.Click
         'toggle checkmark
         sender.Checked = Not sender.Checked
         'set settings and handle doing the stuff
         Select Case sender.Name
             Case CursorshowToolStripMenuItem.Name
                 My.Settings.showcursor = sender.Checked
-                If Not sender.Checked Then
-                    Do
-                    Loop Until ShowCursor(False) <= 1 ' set to 0, ShowCursor returns the previous showcursor value
-                Else
-                    Do
-                    Loop Until ShowCursor(True) >= 0 ' set to 1
-                End If
+                SetCursorVisibility(sender.Checked)
             Case XmbclickToolStripMenuItem.Name
                 My.Settings.xmbclick = sender.Checked
                 If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then
                     mH.HookMouse()
-                ElseIf Not sender.Checked AndAlso mH.HookHandle <> IntPtr.zero Then
+                ElseIf Not sender.Checked AndAlso mH.HookHandle <> IntPtr.Zero AndAlso Not My.Settings.scrollActivate Then
+                    mH.UnhookMouse()
+                End If
+            Case WheelScrollActivateToolStripMenuItem.Name
+                My.Settings.scrollActivate = sender.Checked
+                If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then
+                    mH.HookMouse()
+                ElseIf Not sender.Checked AndAlso mH.HookHandle <> IntPtr.Zero AndAlso Not My.Settings.xmbclick Then
                     mH.UnhookMouse()
                 End If
         End Select
@@ -141,11 +198,12 @@ Public Class frmMain
         If e.Button <> MouseButtons.Left Then Exit Sub
         Try
             If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
-            AppActivate(mudproc.Id)
+            AppActivate(CInt(mudproc?.Id))
         Catch ex As Exception
 
         End Try
     End Sub
+
 #End Region
 
 End Class

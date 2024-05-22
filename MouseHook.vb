@@ -42,15 +42,36 @@ Public Class MouseHook : Implements IDisposable
         ByVal lParam As IntPtr) As Integer
         If nCode <> HC_ACTION Then Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
         Try
-            If My.Settings.xmbclick AndAlso (nCode = HC_ACTION) Then
+            If nCode = HC_ACTION Then
                 Select Case wParam.ToInt32()
-                    Case WM_XBUTTONDOWN
-                        Dim mhs As MSLLHOOKSTRUCT = Marshal.PtrToStructure(Of MSLLHOOKSTRUCT)(lParam)
 
-                        If (mhs.mousedata And &HFFFF0000) AndAlso WindowFromPoint(mhs.pt) = hackMudHandle Then
-                            SendMessage(hackMudHandle, WM_LBUTTONDOWN, 0, 0)
-                            Threading.Thread.Sleep(1) 'this is needed or we get a dragbox
-                            SendMessage(hackMudHandle, WM_LBUTTONUP, 0, 0)
+                    Case WM_XBUTTONDOWN
+                        If My.Settings.xmbclick Then
+                            Dim mhs As MSLLHOOKSTRUCT = Marshal.PtrToStructure(Of MSLLHOOKSTRUCT)(lParam)
+                            If (mhs.mousedata And &HFFFF0000) AndAlso WindowFromPoint(mhs.pt) = hackMudHandle Then
+                                SendMessage(hackMudHandle, WM_LBUTTONDOWN, 0, 0)
+                                Threading.Thread.Sleep(1) ' this is needed or we get a dragbox
+                                SendMessage(hackMudHandle, WM_LBUTTONUP, 0, 0)
+                            End If
+                        End If
+
+                    Case WM_MOUSEWHEEL
+                        If My.Settings.scrollActivate AndAlso
+                                GetForegroundWindow() <> hackMudHandle AndAlso
+                                WindowFromPoint(Control.MousePosition) = hackMudHandle Then
+
+                            Debug.Print($"inactive scroll {wParam}")
+                            ' for some reason this always returns 552, i can't get the delta
+
+                            SetForegroundWindow(hackMudHandle) ' this works but brings window to front
+
+                            'SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0) ' does not work
+                            'SendMessage(hackMudHandle, WM_MOUSEWHEEL, wParam, lParam) ' does nothing
+
+                            ' in wndproc the messages look like this
+                            'WM_MOUSEWHEEL 0x0000020A &H0000020A w7864320 10618611 
+                            'WM_MOUSEWHEEL 0x0000020A &H0000020A w-7864320 10553075
+
                         End If
                 End Select
             End If
@@ -72,7 +93,7 @@ Public Class MouseHook : Implements IDisposable
     Public Sub UnhookMouse()
         If HookHandle <> IntPtr.Zero Then
             UnhookWindowsHookEx(HookHandle)
-            HookHandle = Nothing
+            HookHandle = IntPtr.Zero
         End If
     End Sub
 

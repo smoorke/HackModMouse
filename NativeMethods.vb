@@ -3,11 +3,16 @@ Imports System.Runtime.InteropServices
 
 Module NativeMethods
 
+    Public Const WM_ACTIVATE = &H6
+
+    Public Const WM_NCACTIVATE As Integer = &H86
+
     Public Const WM_SYSCOMMAND = &H112
 
     Public Const WM_LBUTTONDOWN = &H201
     Public Const WM_LBUTTONUP = &H202
 
+    Public Const WM_MOUSEWHEEL = &H20A
     Public Const WM_XBUTTONDOWN = &H20B
 
 
@@ -21,9 +26,18 @@ Module NativeMethods
 
     <DllImport("user32.dll")>
     Public Function WindowFromPoint(pt As Point) As IntPtr : End Function
+    <DllImport("user32.dll")>
+    Public Function SetActiveWindow(hWnd As IntPtr) As IntPtr : End Function
+    <DllImport("user32.dll")>
+    Public Function SetForegroundWindow(hWnd As IntPtr) As Boolean : End Function
+
+    <DllImport("user32.dll")>
+    Public Function GetForegroundWindow() As IntPtr : End Function
 
     <DllImport("user32.dll")>
     Public Function SetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer, ByVal dwNewLong As UInteger) As Integer : End Function
+
+
 
     <DllImport("user32.dll")>
     Public Function ShowCursor(bShow As Boolean) As Integer : End Function

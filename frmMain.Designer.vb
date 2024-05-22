@@ -33,6 +33,7 @@ Partial Class frmMain
         Me.SysconfigureToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CursorshowToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.XmbclickToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.WheelScrollActivateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
@@ -41,22 +42,20 @@ Partial Class frmMain
         '
         'ToolStripMenuItem1
         '
-        ToolStripMenuItem1.BackColor = System.Drawing.Color.Black
-        ToolStripMenuItem1.ForeColor = System.Drawing.Color.White
+        ToolStripMenuItem1.ForeColor = System.Drawing.SystemColors.ControlText
         ToolStripMenuItem1.Name = "ToolStripMenuItem1"
         ToolStripMenuItem1.Size = New System.Drawing.Size(177, 6)
         '
         'ToolStripMenuItem2
         '
-        ToolStripMenuItem2.BackColor = System.Drawing.Color.Black
-        ToolStripMenuItem2.ForeColor = System.Drawing.Color.White
+        ToolStripMenuItem2.ForeColor = System.Drawing.SystemColors.ControlText
         ToolStripMenuItem2.Name = "ToolStripMenuItem2"
         ToolStripMenuItem2.Size = New System.Drawing.Size(177, 6)
         '
         'tmrTick
         '
         Me.tmrTick.Enabled = True
-        Me.tmrTick.Interval = 666
+        Me.tmrTick.Interval = 5077
         '
         'trayIcon
         '
@@ -69,13 +68,10 @@ Partial Class frmMain
         '
         Me.cmsTray.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SysbootToolStripMenuItem, ToolStripMenuItem2, Me.SysconfigureToolStripMenuItem, ToolStripMenuItem1, Me.ExitToolStripMenuItem})
         Me.cmsTray.Name = "cmsTray"
-        Me.cmsTray.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
-        Me.cmsTray.Size = New System.Drawing.Size(181, 104)
+        Me.cmsTray.Size = New System.Drawing.Size(181, 82)
         '
         'SysbootToolStripMenuItem
         '
-        Me.SysbootToolStripMenuItem.BackColor = System.Drawing.Color.Black
-        Me.SysbootToolStripMenuItem.ForeColor = System.Drawing.Color.White
         Me.SysbootToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.HackMod
         Me.SysbootToolStripMenuItem.Name = "SysbootToolStripMenuItem"
         Me.SysbootToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
@@ -83,9 +79,7 @@ Partial Class frmMain
         '
         'SysconfigureToolStripMenuItem
         '
-        Me.SysconfigureToolStripMenuItem.BackColor = System.Drawing.Color.Black
-        Me.SysconfigureToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CursorshowToolStripMenuItem, Me.XmbclickToolStripMenuItem})
-        Me.SysconfigureToolStripMenuItem.ForeColor = System.Drawing.Color.White
+        Me.SysconfigureToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CursorshowToolStripMenuItem, Me.XmbclickToolStripMenuItem, Me.WheelScrollActivateToolStripMenuItem})
         Me.SysconfigureToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.gear_wheel
         Me.SysconfigureToolStripMenuItem.Name = "SysconfigureToolStripMenuItem"
         Me.SysconfigureToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
@@ -93,24 +87,24 @@ Partial Class frmMain
         '
         'CursorshowToolStripMenuItem
         '
-        Me.CursorshowToolStripMenuItem.BackColor = System.Drawing.SystemColors.ActiveCaptionText
-        Me.CursorshowToolStripMenuItem.ForeColor = System.Drawing.Color.White
         Me.CursorshowToolStripMenuItem.Name = "CursorshowToolStripMenuItem"
         Me.CursorshowToolStripMenuItem.Size = New System.Drawing.Size(213, 22)
         Me.CursorshowToolStripMenuItem.Text = "cursor.manage{show:true}"
         '
         'XmbclickToolStripMenuItem
         '
-        Me.XmbclickToolStripMenuItem.BackColor = System.Drawing.SystemColors.ActiveCaptionText
-        Me.XmbclickToolStripMenuItem.ForeColor = System.Drawing.Color.White
         Me.XmbclickToolStripMenuItem.Name = "XmbclickToolStripMenuItem"
         Me.XmbclickToolStripMenuItem.Size = New System.Drawing.Size(213, 22)
         Me.XmbclickToolStripMenuItem.Text = "xmbutton.click{left:true}"
         '
+        'WheelScrollActivateToolStripMenuItem
+        '
+        Me.WheelScrollActivateToolStripMenuItem.Name = "WheelScrollActivateToolStripMenuItem"
+        Me.WheelScrollActivateToolStripMenuItem.Size = New System.Drawing.Size(213, 22)
+        Me.WheelScrollActivateToolStripMenuItem.Text = "wheel.scroll{activate:true}"
+        '
         'ExitToolStripMenuItem
         '
-        Me.ExitToolStripMenuItem.BackColor = System.Drawing.Color.Black
-        Me.ExitToolStripMenuItem.ForeColor = System.Drawing.Color.White
         Me.ExitToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.Close
         Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
         Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
@@ -120,7 +114,7 @@ Partial Class frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(130, 59)
+        Me.ClientSize = New System.Drawing.Size(118, 47)
         Me.ControlBox = False
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -144,4 +138,5 @@ Partial Class frmMain
     Friend WithEvents CursorshowToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents XmbclickToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents SysbootToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents WheelScrollActivateToolStripMenuItem As ToolStripMenuItem
 End Class
