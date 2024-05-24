@@ -9,12 +9,20 @@ Module NativeMethods
 
     Public Const WM_SYSCOMMAND = &H112
 
+    Public Const WM_MOUSEMOVE = &H200
+
     Public Const WM_LBUTTONDOWN = &H201
     Public Const WM_LBUTTONUP = &H202
 
+    Public Const WM_RBUTTONDOWN = &H204
+    Public Const WM_RBUTTONUP = &H205
+
+    Public Const WM_MBUTTONDOWN = &H207
+    Public Const WM_MBUTTONUP = &H208
+
     Public Const WM_MOUSEWHEEL = &H20A
     Public Const WM_XBUTTONDOWN = &H20B
-
+    Public Const WM_XBUTTONUP = &H20C
 
     Public Const SC_RESTORE As Integer = &HF120
 

@@ -22,11 +22,7 @@ Public Class frmMain
 
     End Sub
     Private Sub frmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-        Try
-            If mudproc IsNot Nothing Then AppActivate(mudproc.Id)
-        Catch ex As Exception
-            Debug.Print("guru meditation #bab0")
-        End Try
+        SetForegroundWindow(hackMudHandle)
     End Sub
 #End Region
 
@@ -34,20 +30,20 @@ Public Class frmMain
     Private Sub tmrTick_Tick(sender As Object, e As EventArgs) Handles tmrTick.Tick 'interval 5077 ms
         If mudproc IsNot Nothing AndAlso mudproc.HasExited Then SysbootToolStripMenuItem.Enabled = True
         CursorMagic()
-        Debug.Print($"{mudproc?.MainWindowTitle}:{mudproc?.Id}:{hackMudHandle}")
+        'Debug.Print($"{mudproc?.MainWindowTitle}:{mudproc?.Id}:{hackMudHandle}")
     End Sub
 
-    Private Function CursorMagic()
+    Private Sub CursorMagic()
 
         mudproc = Process.GetProcessesByName("hackmud_win").FirstOrDefault
         hackMudHandle = If(mudproc?.MainWindowHandle, IntPtr.Zero)
 
         'set the parent to hackmud, note docs state you should use SetParent,
         '         however we don't do that to make ShowCursor work, why this works is a mystery to me.
-        'to be honest i never managed to get SetParent to do the things i want my other projects either.
+        'to be honest i never managed to get SetParent to do the things i want in my other projects either.
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, hackMudHandle)
 
-    End Function
+    End Sub
 
     Private ShowValue As Integer
     'this only works because of the GWL_HWNDPARENT
@@ -129,7 +125,7 @@ Public Class frmMain
             setFontRecurse(cmsTray.Items, fnt)
 
         Catch ex As Exception
-            Debug.Print($"Error setting font: {ex.Message}")
+            Debug.Print($"bab0 setting font {ex.Message}")
         End Try
     End Sub
 
@@ -150,10 +146,22 @@ Public Class frmMain
     Private Sub cmsTray_Opening(sender As Object, e As CancelEventArgs) Handles cmsTray.Opening
         SysbootToolStripMenuItem.Enabled = mudproc Is Nothing
         SetCursorVisibility(True)
+
+        ' this is for when OOP crackers send esc followed by WM_ACTIVATE, SetForegroundWindow() or AppActivate() 
+        SetForegroundWindow(hackMudHandle) 'prevents the menu from closing when the above happens
+        ' Note: you need to unminimize hackmud before sending esc or it will fail
+        '       WM_ACTIVATE is preferred as it doesn't pop hackmud to front nor steal focus
+        ' Note: the closing is a sideffect of setting GWL_HWNDPARENT
+
+        If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
+
+        If mH.HookHandle = IntPtr.Zero Then mH.HookMouse() ' additional logic in mousehook to close menu when appropriate
     End Sub
+
     Private Sub cmsTray_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsTray.Closed
         Debug.Print("systray closed")
         SetCursorVisibility(My.Settings.showcursor)
+        If Not (My.Settings.xmbclick OrElse My.Settings.scrollActivate) Then mH.UnhookMouse()
     End Sub
     Private Sub SysconfigureToolStripMenuItem_DropDownOpening(sender As Object, e As EventArgs) Handles SysconfigureToolStripMenuItem.DropDownOpening
         CursorshowToolStripMenuItem.Checked = My.Settings.showcursor
@@ -171,18 +179,10 @@ Public Class frmMain
                 SetCursorVisibility(sender.Checked)
             Case XmbclickToolStripMenuItem.Name
                 My.Settings.xmbclick = sender.Checked
-                If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then
-                    mH.HookMouse()
-                ElseIf Not sender.Checked AndAlso mH.HookHandle <> IntPtr.Zero AndAlso Not My.Settings.scrollActivate Then
-                    mH.UnhookMouse()
-                End If
+                If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then mH.HookMouse()
             Case WheelScrollActivateToolStripMenuItem.Name
                 My.Settings.scrollActivate = sender.Checked
-                If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then
-                    mH.HookMouse()
-                ElseIf Not sender.Checked AndAlso mH.HookHandle <> IntPtr.Zero AndAlso Not My.Settings.xmbclick Then
-                    mH.UnhookMouse()
-                End If
+                If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then mH.HookMouse()
         End Select
     End Sub
 
@@ -190,18 +190,16 @@ Public Class frmMain
         Try
             Process.Start(New ProcessStartInfo("steam://rungameid/469920") With {.UseShellExecute = True})
         Catch ex As Exception
-            Debug.Print($"Error starting hackmud {ex.Message}")
+            Debug.Print($"bab0 starting hackmud {ex.Message}")
         End Try
     End Sub
 
     Private Sub cmsTray_Click(sender As Object, e As MouseEventArgs) Handles trayIcon.MouseDown
         If e.Button <> MouseButtons.Left Then Exit Sub
-        Try
-            If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
-            AppActivate(CInt(mudproc?.Id))
-        Catch ex As Exception
 
-        End Try
+        If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
+
+        SetForegroundWindow(hackMudHandle)
     End Sub
 
 #End Region

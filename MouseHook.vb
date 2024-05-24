@@ -9,10 +9,10 @@ Public Class MouseHook : Implements IDisposable
 
     Public Structure MSLLHOOKSTRUCT
         Public pt As Point
-        Public mousedata As Long
-        Public flags As Long
-        Public time As Long
-        Public dwExtraInfo As Long
+        Public mousedata As Integer
+        Public flags As Integer
+        Public time As Integer
+        Public dwExtraInfo As IntPtr
     End Structure
 
 
@@ -32,8 +32,6 @@ Public Class MouseHook : Implements IDisposable
     <DllImport("User32.dll", CharSet:=CharSet.Auto, CallingConvention:=CallingConvention.StdCall)>
     Public Shared Function UnhookWindowsHookEx(hHook As IntPtr) As Boolean : End Function
 
-    'Public hwnd As IntPtr = IntPtr.Zero
-
     Public HookHandle As IntPtr = IntPtr.Zero
 
     Private Function MouseProc(
@@ -41,43 +39,45 @@ Public Class MouseHook : Implements IDisposable
         ByVal wParam As IntPtr,
         ByVal lParam As IntPtr) As Integer
         If nCode <> HC_ACTION Then Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
-        Try
-            If nCode = HC_ACTION Then
-                Select Case wParam.ToInt32()
 
-                    Case WM_XBUTTONDOWN
-                        If My.Settings.xmbclick Then
-                            Dim mhs As MSLLHOOKSTRUCT = Marshal.PtrToStructure(Of MSLLHOOKSTRUCT)(lParam)
-                            If (mhs.mousedata And &HFFFF0000) AndAlso WindowFromPoint(mhs.pt) = hackMudHandle Then
-                                SendMessage(hackMudHandle, WM_LBUTTONDOWN, 0, 0)
-                                Threading.Thread.Sleep(1) ' this is needed or we get a dragbox
-                                SendMessage(hackMudHandle, WM_LBUTTONUP, 0, 0)
-                            End If
+        If (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse cmsTray.Visible) AndAlso nCode = HC_ACTION Then
+
+            Dim mhs As MSLLHOOKSTRUCT = Marshal.PtrToStructure(Of MSLLHOOKSTRUCT)(lParam)
+
+            Select Case wParam.ToInt32()
+                Case WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN
+                    cmsTray.Closer() ' close the tricked menu properly when clicking hackmud
+
+                Case WM_XBUTTONDOWN
+                    If My.Settings.xmbclick Then ' send a left click
+                        If (mhs.mousedata And &HFFFF0000) AndAlso WindowFromPoint(mhs.pt) = hackMudHandle Then
+                            SendMessage(hackMudHandle, WM_LBUTTONDOWN, 0, 0)
+                            Threading.Thread.Sleep(1) ' this is needed or we get a dragbox
+                            SendMessage(hackMudHandle, WM_LBUTTONUP, 0, 0)
                         End If
+                    End If
 
-                    Case WM_MOUSEWHEEL
+                    ' rarely other applications do not close their traymenu when using xmb on their respective window
+                    ' i'm opting to follow the majority here, the same applies for MBUTTONDOWN
+                    cmsTray.Closer() ' close the tricked menu properly when clicking hackmud
+
+                Case WM_MOUSEWHEEL
                         If My.Settings.scrollActivate AndAlso
                                 GetForegroundWindow() <> hackMudHandle AndAlso
-                                WindowFromPoint(Control.MousePosition) = hackMudHandle Then
-
-                            Debug.Print($"inactive scroll {wParam}")
-                            ' for some reason this always returns 552, i can't get the delta
+                                WindowFromPoint(mhs.pt) = hackMudHandle Then
 
                             SetForegroundWindow(hackMudHandle) ' this works but brings window to front
 
-                            'SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0) ' does not work
-                            'SendMessage(hackMudHandle, WM_MOUSEWHEEL, wParam, lParam) ' does nothing
+                            'Todo: find a way to scroll w/o activating if possible
 
-                            ' in wndproc the messages look like this
-                            'WM_MOUSEWHEEL 0x0000020A &H0000020A w7864320 10618611 
-                            'WM_MOUSEWHEEL 0x0000020A &H0000020A w-7864320 10553075
+                            'Dim delta As Integer = (mhs.mousedata And &HFFFF0000) >> 16
 
+                            'Debug.Print($"inactive scroll {delta}")
                         End If
                 End Select
+
             End If
-        Catch
-            Debug.Print("error in mousehook")
-        End Try
+
         Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
     End Function
 
@@ -87,7 +87,7 @@ Public Class MouseHook : Implements IDisposable
     Public Sub HookMouse()
         HookHandle = SetWindowsHookEx(WH_MOUSE_LL, mhCallBack,
             GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName), 0)
-        If HookHandle = IntPtr.Zero Then Throw New System.Exception("Mouse hook failed")
+        If HookHandle = IntPtr.Zero Then Throw New System.Exception("Mouse hook bab0")
     End Sub
 
     Public Sub UnhookMouse()
