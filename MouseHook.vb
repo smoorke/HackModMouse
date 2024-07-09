@@ -40,17 +40,20 @@ Public Class MouseHook : Implements IDisposable
         ByVal lParam As IntPtr) As Integer
         If nCode <> HC_ACTION Then Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
 
-        If (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse cmsTray.Visible) AndAlso nCode = HC_ACTION Then
+        If nCode = HC_ACTION AndAlso (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat OrElse cmsTray.Visible) Then
 
             Dim mhs As MSLLHOOKSTRUCT = Marshal.PtrToStructure(Of MSLLHOOKSTRUCT)(lParam)
 
             Select Case wParam.ToInt32()
                 Case WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN
                     cmsTray.Closer() ' close the tricked menu properly when clicking hackmud
-
+                Case WM_LBUTTONUP
+                    If My.Settings.lcCompat AndAlso GetForegroundWindow() = hackMudHandle Then Threading.Thread.Sleep(16)
                 Case WM_XBUTTONDOWN
                     If My.Settings.xmbclick Then ' send a left click
-                        If (mhs.mousedata And &HFFFF0000) AndAlso WindowFromPoint(mhs.pt) = hackMudHandle Then
+                        If (mhs.mousedata And &HFFFF0000) AndAlso WindowFromPoint(mhs.pt) = hackMudHandle AndAlso
+                            mhs.flags = 0 Then 'don't click on injected event
+                            Debug.Print($"xmbclick {mhs.flags} {mhs.mousedata}")
                             SendMessage(hackMudHandle, WM_LBUTTONDOWN, 0, 0)
                             Threading.Thread.Sleep(1) ' this is needed or we get a dragbox
                             SendMessage(hackMudHandle, WM_LBUTTONUP, 0, 0)
@@ -62,21 +65,27 @@ Public Class MouseHook : Implements IDisposable
                     cmsTray.Closer() ' close the tricked menu properly when clicking hackmud
 
                 Case WM_MOUSEWHEEL
-                        If My.Settings.scrollActivate AndAlso
+                    If My.Settings.scrollActivate AndAlso
                                 GetForegroundWindow() <> hackMudHandle AndAlso
                                 WindowFromPoint(mhs.pt) = hackMudHandle Then
 
-                            SetForegroundWindow(hackMudHandle) ' this works but brings window to front
+                        'activate the window
+                        'needs Task.Run or there is lag
+                        Task.Run(Sub() SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)) 'inject xmb to activate window
 
-                            'Todo: find a way to scroll w/o activating if possible
+                        'SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0) 'doesn't work
 
-                            'Dim delta As Integer = (mhs.mousedata And &HFFFF0000) >> 16
+                        'SetForegroundWindow(hackMudHandle) 'doesn't work if not debugging
 
-                            'Debug.Print($"inactive scroll {delta}")
-                        End If
-                End Select
+                        'Todo: find a way to scroll w/o activating if possible
 
-            End If
+                        Dim delta As Integer = (mhs.mousedata And &HFFFF0000) >> 16
+
+                        Debug.Print($"inactive scroll {delta}")
+                    End If
+            End Select
+
+        End If
 
         Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
     End Function

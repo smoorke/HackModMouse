@@ -16,7 +16,7 @@ Public Class frmMain
 
         SetCursorVisibility(My.Settings.showcursor)
 
-        If My.Settings.xmbclick OrElse My.Settings.scrollActivate Then mH.HookMouse() 'send left mousebutton instead of xmb
+        If My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat Then mH.HookMouse() 'send left mousebutton instead of xmb
         'these are off by default to have less false positives on viruscanners
         'note: when this is enabled debugging lags the mouse a few seconds when hackmod is in break mode
 
@@ -35,7 +35,11 @@ Public Class frmMain
 
     Private Sub CursorMagic()
 
-        mudproc = Process.GetProcessesByName("hackmud_win").FirstOrDefault
+        Dim pp As Process = Process.GetProcessesByName("hackmud_win").FirstOrDefault
+
+        If pp IsNot Nothing AndAlso String.IsNullOrWhiteSpace(pp.MainWindowTitle) Then pp = Nothing
+
+        mudproc = pp
         hackMudHandle = If(mudproc?.MainWindowHandle, IntPtr.Zero)
 
         'set the parent to hackmud, note docs state you should use SetParent,
@@ -147,10 +151,11 @@ Public Class frmMain
         SysbootToolStripMenuItem.Enabled = mudproc Is Nothing
         SetCursorVisibility(True)
 
-        ' this is for when OOP crackers send esc followed by WM_ACTIVATE, SetForegroundWindow() or AppActivate() 
-        SetForegroundWindow(hackMudHandle) 'prevents the menu from closing when the above happens
+        ' this is for when OOP crackers send esc followed by WM_ACTIVATE, SetForegroundWindow() or AppActivate()
+        SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0) 'prevents the menu from closing when the above happens
+        'SendMessage(GetDesktopWindow(), WM_ACTIVATE, 1, 0) 'prevents the menu from closing when the above happens
         ' Note: you need to unminimize hackmud before sending esc or it will fail
-        '       WM_ACTIVATE is preferred as it doesn't pop hackmud to front nor steal focus
+        '   in your OOP WM_ACTIVATE is preferred as it doesn't make pop hackmud to front nor steal focus
         ' Note: the closing is a sideffect of setting GWL_HWNDPARENT
 
         If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
@@ -161,15 +166,16 @@ Public Class frmMain
     Private Sub cmsTray_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsTray.Closed
         Debug.Print("systray closed")
         SetCursorVisibility(My.Settings.showcursor)
-        If Not (My.Settings.xmbclick OrElse My.Settings.scrollActivate) Then mH.UnhookMouse()
+        If Not (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat) Then mH.UnhookMouse()
     End Sub
     Private Sub SysconfigureToolStripMenuItem_DropDownOpening(sender As Object, e As EventArgs) Handles SysconfigureToolStripMenuItem.DropDownOpening
         CursorshowToolStripMenuItem.Checked = My.Settings.showcursor
+        LeftclickcompatToolStripMenuItem.Checked = My.Settings.lcCompat
         XmbclickToolStripMenuItem.Checked = My.Settings.xmbclick
         WheelScrollActivateToolStripMenuItem.Checked = My.Settings.scrollActivate
     End Sub
 
-    Private Sub SysconfigureItemToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CursorshowToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click, WheelScrollActivateToolStripMenuItem.Click
+    Private Sub SysconfigureItemToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CursorshowToolStripMenuItem.Click, LeftclickcompatToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click, WheelScrollActivateToolStripMenuItem.Click
         'toggle checkmark
         sender.Checked = Not sender.Checked
         'set settings and handle doing the stuff
@@ -177,6 +183,8 @@ Public Class frmMain
             Case CursorshowToolStripMenuItem.Name
                 My.Settings.showcursor = sender.Checked
                 SetCursorVisibility(sender.Checked)
+            Case LeftclickcompatToolStripMenuItem.Name
+                My.Settings.lcCompat = sender.Checked
             Case XmbclickToolStripMenuItem.Name
                 My.Settings.xmbclick = sender.Checked
                 If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then mH.HookMouse()
@@ -187,20 +195,35 @@ Public Class frmMain
     End Sub
 
     Private Sub SysbootToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SysbootToolStripMenuItem.Click
+        Dim pp As Process = Nothing
         Try
-            Process.Start(New ProcessStartInfo("steam://rungameid/469920") With {.UseShellExecute = True})
+            'Process.Start(New ProcessStartInfo("steam://rungameid/469920") With {.UseShellExecute = True})
+            'Process.Start(New ProcessStartInfo("explorer") With {.Arguments = "steam://rungameid/469920"})
+            pp = Process.Start("explorer", "steam://rungameid/469920")
         Catch ex As Exception
             Debug.Print($"bab0 starting hackmud {ex.Message}")
+        Finally
+            pp?.Dispose()
         End Try
     End Sub
 
-    Private Sub cmsTray_Click(sender As Object, e As MouseEventArgs) Handles trayIcon.MouseDown
+    Private Sub cmsTray_Click(sender As Object, e As MouseEventArgs) Handles trayIcon.MouseDoubleClick
         If e.Button <> MouseButtons.Left Then Exit Sub
 
         If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
 
         SetForegroundWindow(hackMudHandle)
+
     End Sub
+
+    Private Sub cmsTray_MouseEnter(sender As ContextMenuStrip, e As EventArgs) Handles cmsTray.MouseEnter
+        '    Debug.Print($"MouseEnter")
+
+        '    SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0)
+        '    sender.BringToFront()
+    End Sub
+
+
 
 #End Region
 

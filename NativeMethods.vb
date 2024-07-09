@@ -43,6 +43,11 @@ Module NativeMethods
     Public Function GetForegroundWindow() As IntPtr : End Function
 
     <DllImport("user32.dll")>
+    Public Function GetDesktopWindow() As IntPtr : End Function
+
+
+
+    <DllImport("user32.dll")>
     Public Function SetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer, ByVal dwNewLong As UInteger) As Integer : End Function
 
 
