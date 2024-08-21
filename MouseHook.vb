@@ -61,7 +61,7 @@ Public Class MouseHook : Implements IDisposable
                     End If
 
                     ' rarely other applications do not close their traymenu when using xmb on their respective window
-                    ' i'm opting to follow the majority here, the same applies for MBUTTONDOWN
+                    ' i'm opting to follow the majority here and close it, the same applies for MBUTTONDOWN
                     cmsTray.Closer() ' close the tricked menu properly when clicking hackmud
 
                 Case WM_MOUSEWHEEL
@@ -78,10 +78,10 @@ Public Class MouseHook : Implements IDisposable
                         'SetForegroundWindow(hackMudHandle) 'doesn't work if not debugging
 
                         'Todo: find a way to scroll w/o activating if possible
-
+#If debug Then
                         Dim delta As Integer = (mhs.mousedata And &HFFFF0000) >> 16
-
                         Debug.Print($"inactive scroll {delta}")
+#End If
                     End If
             End Select
 

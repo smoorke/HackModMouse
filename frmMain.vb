@@ -215,7 +215,6 @@ Public Class frmMain
         SetForegroundWindow(hackMudHandle)
 
     End Sub
-
 #End Region
 
 End Class
