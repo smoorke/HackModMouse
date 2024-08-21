@@ -16,7 +16,7 @@ Public Class frmMain
 
         SetCursorVisibility(My.Settings.showcursor)
 
-        If My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat Then mH.HookMouse() 'send left mousebutton instead of xmb
+        If My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat Then mH.HookMouse()
         'these are off by default to have less false positives on viruscanners
         'note: when this is enabled debugging lags the mouse a few seconds when hackmod is in break mode
 
@@ -99,12 +99,10 @@ Public Class frmMain
         cmsTray.Renderer = New ThemedRenderer(col)
         SetForeColorRecurse(cmsTray.Items, col)
     End Sub
-    Private Sub SetForeColorRecurse(collection As ToolStripItemCollection, foreColor As Color)
-        For Each item As ToolStripMenuItem In collection.OfType(Of ToolStripMenuItem) ' Skip separators
-            item.ForeColor = foreColor
-            If item.HasDropDown Then
-                SetForeColorRecurse(item.DropDownItems, foreColor)
-            End If
+    Private Sub SetForeColorRecurse(collection As ToolStripItemCollection, col As Color)
+        For Each item As ToolStripMenuItem In collection.OfType(Of ToolStripMenuItem) ' skip separators
+            item.ForeColor = col
+            If item.HasDropDown Then SetForeColorRecurse(item.DropDownItems, col)
         Next
     End Sub
 #End Region
@@ -134,9 +132,9 @@ Public Class frmMain
     End Sub
 
     Private Sub setFontRecurse(collection As ToolStripItemCollection, fnt As Font)
-        For Each menuitem As ToolStripMenuItem In collection.OfType(Of ToolStripMenuItem) 'skip separators
-            menuitem.Font = fnt
-            If menuitem.HasDropDown Then setFontRecurse(menuitem.DropDownItems, fnt)
+        For Each item As ToolStripMenuItem In collection.OfType(Of ToolStripMenuItem) ' skip separators
+            item.Font = fnt
+            If item.HasDropDown Then setFontRecurse(item.DropDownItems, fnt)
         Next
     End Sub
 #End Region
@@ -153,9 +151,8 @@ Public Class frmMain
 
         ' this is for when OOP crackers send esc followed by WM_ACTIVATE, SetForegroundWindow() or AppActivate()
         SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0) 'prevents the menu from closing when the above happens
-        'SendMessage(GetDesktopWindow(), WM_ACTIVATE, 1, 0) 'prevents the menu from closing when the above happens
         ' Note: you need to unminimize hackmud before sending esc or it will fail
-        '   in your OOP WM_ACTIVATE is preferred as it doesn't make pop hackmud to front nor steal focus
+        '   in your OOP WM_ACTIVATE is preferred as it doesn't make hackmud pop to front nor steal focus
         ' Note: the closing is a sideffect of setting GWL_HWNDPARENT
 
         If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
@@ -173,6 +170,11 @@ Public Class frmMain
         LeftclickcompatToolStripMenuItem.Checked = My.Settings.lcCompat
         XmbclickToolStripMenuItem.Checked = My.Settings.xmbclick
         WheelScrollActivateToolStripMenuItem.Checked = My.Settings.scrollActivate
+
+        For Each item As ToolStripMenuItem In SysconfigureToolStripMenuItem.DropDownItems.OfType(Of ToolStripMenuItem)
+            item.Image = If(item.Checked, My.Resources.goodmud, Nothing)
+        Next
+
     End Sub
 
     Private Sub SysconfigureItemToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CursorshowToolStripMenuItem.Click, LeftclickcompatToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click, WheelScrollActivateToolStripMenuItem.Click
@@ -197,8 +199,6 @@ Public Class frmMain
     Private Sub SysbootToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SysbootToolStripMenuItem.Click
         Dim pp As Process = Nothing
         Try
-            'Process.Start(New ProcessStartInfo("steam://rungameid/469920") With {.UseShellExecute = True})
-            'Process.Start(New ProcessStartInfo("explorer") With {.Arguments = "steam://rungameid/469920"})
             pp = Process.Start("explorer", "steam://rungameid/469920")
         Catch ex As Exception
             Debug.Print($"bab0 starting hackmud {ex.Message}")
@@ -215,15 +215,6 @@ Public Class frmMain
         SetForegroundWindow(hackMudHandle)
 
     End Sub
-
-    Private Sub cmsTray_MouseEnter(sender As ContextMenuStrip, e As EventArgs) Handles cmsTray.MouseEnter
-        '    Debug.Print($"MouseEnter")
-
-        '    SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0)
-        '    sender.BringToFront()
-    End Sub
-
-
 
 #End Region
 

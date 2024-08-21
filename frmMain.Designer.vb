@@ -32,10 +32,10 @@ Partial Class frmMain
         Me.SysbootToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.SysconfigureToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CursorshowToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.LeftclickcompatToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.XmbclickToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.WheelScrollActivateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.LeftclickcompatToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
         Me.cmsTray.SuspendLayout()
@@ -69,7 +69,7 @@ Partial Class frmMain
         '
         Me.cmsTray.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SysbootToolStripMenuItem, ToolStripMenuItem2, Me.SysconfigureToolStripMenuItem, ToolStripMenuItem1, Me.ExitToolStripMenuItem})
         Me.cmsTray.Name = "cmsTray"
-        Me.cmsTray.Size = New System.Drawing.Size(181, 104)
+        Me.cmsTray.Size = New System.Drawing.Size(181, 82)
         '
         'SysbootToolStripMenuItem
         '
@@ -89,20 +89,26 @@ Partial Class frmMain
         'CursorshowToolStripMenuItem
         '
         Me.CursorshowToolStripMenuItem.Name = "CursorshowToolStripMenuItem"
-        Me.CursorshowToolStripMenuItem.Size = New System.Drawing.Size(213, 22)
-        Me.CursorshowToolStripMenuItem.Text = "cursor.manage{show:true}"
+        Me.CursorshowToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.CursorshowToolStripMenuItem.Text = "cursor.manage{show}"
+        '
+        'LeftclickcompatToolStripMenuItem
+        '
+        Me.LeftclickcompatToolStripMenuItem.Name = "LeftclickcompatToolStripMenuItem"
+        Me.LeftclickcompatToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.LeftclickcompatToolStripMenuItem.Text = "left.click{compat}"
         '
         'XmbclickToolStripMenuItem
         '
         Me.XmbclickToolStripMenuItem.Name = "XmbclickToolStripMenuItem"
-        Me.XmbclickToolStripMenuItem.Size = New System.Drawing.Size(213, 22)
-        Me.XmbclickToolStripMenuItem.Text = "xmbutton.click{left:true}"
+        Me.XmbclickToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.XmbclickToolStripMenuItem.Text = "xmbutton.click{left}"
         '
         'WheelScrollActivateToolStripMenuItem
         '
         Me.WheelScrollActivateToolStripMenuItem.Name = "WheelScrollActivateToolStripMenuItem"
-        Me.WheelScrollActivateToolStripMenuItem.Size = New System.Drawing.Size(213, 22)
-        Me.WheelScrollActivateToolStripMenuItem.Text = "wheel.scroll{activate:true}"
+        Me.WheelScrollActivateToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.WheelScrollActivateToolStripMenuItem.Text = "wheel.scroll{activate}"
         '
         'ExitToolStripMenuItem
         '
@@ -111,19 +117,13 @@ Partial Class frmMain
         Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.ExitToolStripMenuItem.Text = "hackmod.shutdown"
         '
-        'LeftclickcompatToolStripMenuItem
-        '
-        Me.LeftclickcompatToolStripMenuItem.Name = "LeftclickcompatToolStripMenuItem"
-        Me.LeftclickcompatToolStripMenuItem.Size = New System.Drawing.Size(213, 22)
-        Me.LeftclickcompatToolStripMenuItem.Text = "left.click{compat:true}"
-        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(114, 43)
+        Me.ClientSize = New System.Drawing.Size(0, 0)
         Me.ControlBox = False
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
         Me.MinimizeBox = False

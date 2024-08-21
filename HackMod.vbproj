@@ -141,5 +141,8 @@
   <ItemGroup>
     <None Include="Resources\HackMod.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\goodmud.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
