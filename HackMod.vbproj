@@ -130,9 +130,6 @@
     <None Include="Resources\whitrabt.ttf\whitrabt.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="HackMod.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Close.png" />
   </ItemGroup>
   <ItemGroup>
