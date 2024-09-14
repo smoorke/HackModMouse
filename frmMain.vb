@@ -30,7 +30,7 @@ Public Class frmMain
     Private Sub tmrTick_Tick(sender As Object, e As EventArgs) Handles tmrTick.Tick 'interval 1337 ms
         If mudproc IsNot Nothing AndAlso mudproc.HasExited Then
             SysbootToolStripMenuItem.Enabled = True
-            setGuiVfxBendToolStripMenuItem.Enabled = False
+            GuiVfxBendToolStripMenuItem.Enabled = False
         End If
         CursorMagic()
         'Debug.Print($"{mudproc?.MainWindowTitle}:{mudproc?.Id}:{hackMudHandle}")
@@ -174,7 +174,7 @@ Public Class frmMain
         XmbclickToolStripMenuItem.Checked = My.Settings.xmbclick
         WheelScrollActivateToolStripMenuItem.Checked = My.Settings.scrollActivate
 
-        setGuiVfxBendToolStripMenuItem.Enabled = mudproc IsNot Nothing
+        GuiVfxBendToolStripMenuItem.Enabled = mudproc IsNot Nothing
 
         For Each item As ToolStripItem In SysconfigureToolStripMenuItem.DropDownItems
             If TypeOf item Is ToolStripSeparator Then
@@ -228,7 +228,7 @@ Public Class frmMain
         SetForegroundWindow(hackMudHandle)
     End Sub
 
-    Private Sub setGuiVfxBendToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles setGuiVfxBendToolStripMenuItem.Click
+    Private Sub setGuiVfxBendToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles GuiVfxBendToolStripMenuItem.Click
 
         'send esc
         SendMessage(hackMudHandle, WM_KEYDOWN, Keys.Escape, 1) ' esc down

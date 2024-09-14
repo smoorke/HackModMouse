@@ -1,7 +1,4 @@
-﻿Imports System.Drawing.Imaging
-Imports System.Drawing.Text
-
-Public Class ThemedRenderer
+﻿Public Class ThemedRenderer
     Inherits ToolStripProfessionalRenderer
 
     Private col As Color
@@ -21,7 +18,7 @@ Public Class ThemedRenderer
         Dim graphics As Graphics = e.Graphics
         Dim textColor As Color = e.TextColor
         Dim textFont As Font = e.TextFont
-        Dim italicFont As New Font(textFont, FontStyle.Italic)
+        'Dim italicFont As New Font(textFont, FontStyle.Italic)
         Dim text As String = e.Text
         Dim textRectangle As Rectangle = e.TextRectangle
         Dim textFormat As TextFormatFlags = e.TextFormat
@@ -33,15 +30,11 @@ Public Class ThemedRenderer
                                  Color.FromArgb(&HFF00FFFF),
                                  Color.FromArgb(&HFFFF00EC)}
 
-        ' Determine the text color based on the item's enabled state
-        'textColor = If(item.Enabled, textColor, SystemColors.GrayText)
-
-
         ' Draw each character individually with different colors
-        Dim charHeight As Integer = TextRenderer.MeasureText("W", textFont).Height ' Approximate character height
+        Dim charHeight As Integer = 12 ' Approximate character height
         Dim charWidth As Integer = 9 ' Approximate character width
         Dim xPos As Integer = textRectangle.Left
-        Dim yPos As Integer = (textRectangle.Top + textRectangle.Height) / 2 - charHeight / 2 + 1
+        Dim yPos As Integer = (textRectangle.Top + textRectangle.Height) / 2 - charHeight / 2
         Dim colorIndex As Integer = -1
 
         For i As Integer = 0 To text.Length - 1
@@ -56,9 +49,7 @@ Public Class ThemedRenderer
                 colorIndex += 1
             End If
 
-            Using colorBrush As New SolidBrush(drawColor)
-                TextRenderer.DrawText(graphics, currentChar.ToString(), textFont, New Rectangle(xPos, yPos, charWidth, charHeight), colorBrush.Color, textFormat)
-            End Using
+            TextRenderer.DrawText(graphics, currentChar.ToString(), textFont, New Rectangle(xPos, yPos, charWidth, charHeight), drawColor, textFormat)
 
             ' Update xPos for the next character
             xPos += 7

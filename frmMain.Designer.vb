@@ -36,7 +36,7 @@ Partial Class frmMain
         Me.LeftclickcompatToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.XmbclickToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.WheelScrollActivateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.setGuiVfxBendToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.GuiVfxBendToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
@@ -78,18 +78,19 @@ Partial Class frmMain
         Me.cmsTray.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SysbootToolStripMenuItem, ToolStripSeparator1, Me.SysconfigureToolStripMenuItem, ToolStripSeparator2, Me.ExitToolStripMenuItem})
         Me.cmsTray.Name = "cmsTray"
         Me.cmsTray.Size = New System.Drawing.Size(181, 82)
+        Me.cmsTray.Tag = ""
         '
         'SysbootToolStripMenuItem
         '
         Me.SysbootToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.HackMod
         Me.SysbootToolStripMenuItem.Name = "SysbootToolStripMenuItem"
         Me.SysbootToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
-        Me.SysbootToolStripMenuItem.Tag = "DefRender"
+        Me.SysbootToolStripMenuItem.Tag = ""
         Me.SysbootToolStripMenuItem.Text = "sys.boot"
         '
         'SysconfigureToolStripMenuItem
         '
-        Me.SysconfigureToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CursorshowToolStripMenuItem, Me.LeftclickcompatToolStripMenuItem, Me.XmbclickToolStripMenuItem, Me.WheelScrollActivateToolStripMenuItem, ToolStripSeparator3, Me.setGuiVfxBendToolStripMenuItem})
+        Me.SysconfigureToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CursorshowToolStripMenuItem, Me.LeftclickcompatToolStripMenuItem, Me.XmbclickToolStripMenuItem, Me.WheelScrollActivateToolStripMenuItem, ToolStripSeparator3, Me.GuiVfxBendToolStripMenuItem})
         Me.SysconfigureToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.mud
         Me.SysconfigureToolStripMenuItem.Name = "SysconfigureToolStripMenuItem"
         Me.SysconfigureToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
@@ -119,13 +120,13 @@ Partial Class frmMain
         Me.WheelScrollActivateToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.WheelScrollActivateToolStripMenuItem.Text = "wheel.scroll{activate}"
         '
-        'setGuiVfxBendToolStripMenuItem
+        'GuiVfxBendToolStripMenuItem
         '
-        Me.setGuiVfxBendToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.HackMod
-        Me.setGuiVfxBendToolStripMenuItem.Name = "setGuiVfxBendToolStripMenuItem"
-        Me.setGuiVfxBendToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
-        Me.setGuiVfxBendToolStripMenuItem.Tag = "DefRender"
-        Me.setGuiVfxBendToolStripMenuItem.Text = ">>gui.vfx{bend:0}"
+        Me.GuiVfxBendToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.HackMod
+        Me.GuiVfxBendToolStripMenuItem.Name = "GuiVfxBendToolStripMenuItem"
+        Me.GuiVfxBendToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.GuiVfxBendToolStripMenuItem.Tag = ""
+        Me.GuiVfxBendToolStripMenuItem.Text = ">>gui.vfx{bend:0}"
         '
         'ExitToolStripMenuItem
         '
@@ -167,5 +168,5 @@ Partial Class frmMain
     Friend WithEvents SysbootToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents WheelScrollActivateToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents LeftclickcompatToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents setGuiVfxBendToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents GuiVfxBendToolStripMenuItem As ToolStripMenuItem
 End Class
