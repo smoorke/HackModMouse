@@ -8,18 +8,18 @@
 <br>
 
 
-- sys.boot <sub>launches hackmud</sub>
+- `sys.boot` <sub>launches hackmud</sub>
 
-- sys.configure/
+- `sys.configure`
  
-  - cursor.manage <sub>toggle on or off showing cursor</sub>
+  - `cursor.manage{show}` <sub>toggle on or off showing cursor</sub>
 
-  - left.click{compat} <sub>vnc compatibility mode to prevent dragbox</sub>
+  - `left.click{compat}` <sub>vnc compatibility mode to prevent dragbox</sub>
 
-  - xmbutton.click <sub>pressing extramousebutton 1 or 2 instead sends a left click to hackmud</sub><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<sub>these buttons are also known as back/forward</sub>
+  - `xmbutton.click{left}` <sub>pressing extramousebutton 1 or 2 instead sends a left click to hackmud</sub><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<sub>these buttons are also known as back/forward</sub>
 
-   - wheel.scroll <sub>scrolling hackmud with it inactive activates and brings it to front</sub>
+   - `wheel.scroll{activate}` <sub>scrolling hackmud with it inactive activates and brings it to front</sub>
 
-   - \>>gui.vfx{bend:0} <sub>sends command to hackmud so cursor lines up better</sub>
+   - `>>gui.vfx{bend:0}` <sub>sends command to hackmud so cursor lines up better</sub>
 
-- hackmod.shutdown <sub>closes hackmod</sub>
+- `hackmod.shutdown` <sub>closes hackmod</sub>
