@@ -9,6 +9,12 @@
     End Sub
 
     Protected Overrides Sub OnRenderItemText(e As ToolStripItemTextRenderEventArgs)
+
+        If e.Text.StartsWith(">>") Then
+            Dim rc = New Rectangle(e.TextRectangle.Left - 14, e.TextRectangle.Top, e.TextRectangle.Width, e.TextRectangle.Height)
+            e = New ToolStripItemTextRenderEventArgs(e.Graphics, e.Item, e.Text, rc, e.TextColor, e.TextFont, e.TextFormat)
+        End If
+
         If Not e.Text.StartsWith(">>") OrElse Not e.Item.Enabled OrElse Not e.Item.Selected Then
             MyBase.OnRenderItemText(e)
             Return
@@ -30,7 +36,7 @@
                                  Color.FromArgb(&HFF00FFFF),
                                  Color.FromArgb(&HFFFF00EC)}
 
-        ' Draw each character individually with different colors
+        ' Draw each characters individually with color map
         Dim charHeight As Integer = 12 ' Approximate character height
         Dim charWidth As Integer = 9 ' Approximate character width
         Dim xPos As Integer = textRectangle.Left

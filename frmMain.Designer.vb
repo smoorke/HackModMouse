@@ -25,8 +25,8 @@ Partial Class frmMain
         Me.components = New System.ComponentModel.Container()
         Dim ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
-        Dim ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
+        Dim ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
         Me.tmrTick = New System.Windows.Forms.Timer(Me.components)
         Me.trayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
         Me.cmsTray = New System.Windows.Forms.ContextMenuStrip(Me.components)
@@ -55,11 +55,6 @@ Partial Class frmMain
         ToolStripSeparator2.Name = "ToolStripSeparator2"
         ToolStripSeparator2.Size = New System.Drawing.Size(177, 6)
         ToolStripSeparator2.Tag = "DefRender"
-        '
-        'ToolStripSeparator3
-        '
-        ToolStripSeparator3.Name = "ToolStripSeparator3"
-        ToolStripSeparator3.Size = New System.Drawing.Size(186, 6)
         '
         'tmrTick
         '
@@ -119,6 +114,11 @@ Partial Class frmMain
         Me.WheelScrollActivateToolStripMenuItem.Name = "WheelScrollActivateToolStripMenuItem"
         Me.WheelScrollActivateToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.WheelScrollActivateToolStripMenuItem.Text = "wheel.scroll{activate}"
+        '
+        'ToolStripSeparator3
+        '
+        ToolStripSeparator3.Name = "ToolStripSeparator3"
+        ToolStripSeparator3.Size = New System.Drawing.Size(186, 6)
         '
         'GuiVfxBendToolStripMenuItem
         '
