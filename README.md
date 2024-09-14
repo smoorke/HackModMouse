@@ -20,6 +20,6 @@
 
    - wheel.scroll <sub>scrolling hackmud with it inactive activates and brings it to front</sub>
 
-   - \>>gui.vxf{bend:0} <sub>sends command to hackmud so cursor lines up better</sub>
+   - \>>gui.vfx{bend:0} <sub>sends command to hackmud so cursor lines up better</sub>
 
 - hackmod.shutdown <sub>closes hackmod</sub>
