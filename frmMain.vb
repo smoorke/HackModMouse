@@ -75,7 +75,7 @@ Public Class frmMain
             Loop
         Else
             ' ensure exact value
-            Do While ShowValue > If(My.Settings.showcursor, 1, 0)
+            Do While ShowValue > If(My.Settings.showcursor, 1, -1)
                 ShowValue = ShowCursor(False)
                 Debug.Print($"ensuring cursor invisibility: {ShowValue}")
             Loop
