@@ -1,4 +1,7 @@
-﻿Public Class ThemedRenderer
+﻿Imports System.Drawing.Imaging
+Imports System.Drawing.Text
+
+Public Class ThemedRenderer
     Inherits ToolStripProfessionalRenderer
 
     Private col As Color
@@ -6,6 +9,60 @@
     Public Sub New(col As Color)
         MyBase.New(New ThemedToolStripColorTable(col))
         Me.col = col
+    End Sub
+
+    Protected Overrides Sub OnRenderItemText(e As ToolStripItemTextRenderEventArgs)
+        If Not e.Text.StartsWith(">>") OrElse Not e.Item.Enabled OrElse Not e.Item.Selected Then
+            MyBase.OnRenderItemText(e)
+            Return
+        End If
+
+        Dim item As ToolStripItem = e.Item
+        Dim graphics As Graphics = e.Graphics
+        Dim textColor As Color = e.TextColor
+        Dim textFont As Font = e.TextFont
+        Dim italicFont As New Font(textFont, FontStyle.Italic)
+        Dim text As String = e.Text
+        Dim textRectangle As Rectangle = e.TextRectangle
+        Dim textFormat As TextFormatFlags = e.TextFormat
+
+        ' Define colors for different groups
+        Dim colors As Color() = {Color.White,
+                                 Color.FromArgb(&HFFFF8000),
+                                 Color.FromArgb(&HFF1EFF00),
+                                 Color.FromArgb(&HFF00FFFF),
+                                 Color.FromArgb(&HFFFF00EC)}
+
+        ' Determine the text color based on the item's enabled state
+        'textColor = If(item.Enabled, textColor, SystemColors.GrayText)
+
+
+        ' Draw each character individually with different colors
+        Dim charHeight As Integer = TextRenderer.MeasureText("W", textFont).Height ' Approximate character height
+        Dim charWidth As Integer = 9 ' Approximate character width
+        Dim xPos As Integer = textRectangle.Left
+        Dim yPos As Integer = (textRectangle.Top + textRectangle.Height) / 2 - charHeight / 2 + 1
+        Dim colorIndex As Integer = -1
+
+        For i As Integer = 0 To text.Length - 1
+            Dim currentChar As Char = text(i)
+            Dim drawColor As Color
+
+            ' Determine color based on character type
+            If Char.IsLetterOrDigit(currentChar) Then
+                drawColor = colors(colorIndex)
+            Else
+                drawColor = colors(0)
+                colorIndex += 1
+            End If
+
+            Using colorBrush As New SolidBrush(drawColor)
+                TextRenderer.DrawText(graphics, currentChar.ToString(), textFont, New Rectangle(xPos, yPos, charWidth, charHeight), colorBrush.Color, textFormat)
+            End Using
+
+            ' Update xPos for the next character
+            xPos += 7
+        Next
     End Sub
 
     Protected Overrides Sub OnRenderArrow(e As ToolStripArrowRenderEventArgs)
@@ -50,12 +107,48 @@
             Dim x As Integer = rect.X + (rect.Width - w) \ 2
             Dim y As Integer = rect.Y + (rect.Height - h) \ 2
 
+            Dim img As Image = e.Image
+
+            If Not e.Item.Enabled Then
+                img = CreateDisabledImage(e.Image)
+            Else
+                If e.Item.Text.StartsWith(">>") AndAlso Not e.Item.Selected Then
+                    img = img.AsGrayscale
+                End If
+            End If
             ' Draw the image
-            g.DrawImage(If(e.Item.Enabled, e.Image, CreateDisabledImage(e.Image)), x, y, w, h)
+            g.DrawImage(img, x, y, w, h)
         End If
     End Sub
 
 End Class
+
+Module ImageExtension
+    <Runtime.CompilerServices.Extension()>
+    Public Function AsGrayscale(ByVal img As Image) As Image
+        Try
+            Dim bmp = New Bitmap(img.Width, img.Height)
+            Using gfx = Graphics.FromImage(bmp), attr As New Imaging.ImageAttributes()
+                ' Set grayscale matrix with hardcoded 75% brightness
+                Dim grayscaleMatrix As New Imaging.ColorMatrix(
+                    {
+                        New Single() {0.3F, 0.3F, 0.3F, 0, 0}, ' Red channel
+                        New Single() {0.59F, 0.59F, 0.59F, 0, 0}, ' Green channel
+                        New Single() {0.11F, 0.11F, 0.11F, 0, 0}, ' Blue channel 
+                        New Single() {0, 0, 0, 1, 0},   ' Alpha channel (unchanged)
+                        New Single() {0, 0, 0, 0, 1}    ' No translation changes
+                    })
+                attr.SetColorMatrix(grayscaleMatrix)
+                gfx.DrawImage(img, New Rectangle(0, 0, bmp.Width, bmp.Height),
+                              0, 0, img.Width, img.Height, GraphicsUnit.Pixel, attr)
+            End Using
+            Return bmp
+        Catch ex As Exception
+            Debug.Print($"Exception in AsGrayscaleWith75Brightness {ex.Message}")
+            Return Nothing
+        End Try
+    End Function
+End Module
 
 Public Class ThemedToolStripColorTable : Inherits ProfessionalColorTable
     Private col As Color
@@ -75,7 +168,7 @@ Public Class ThemedToolStripColorTable : Inherits ProfessionalColorTable
             Return Me.col
         End Get
     End Property
-   
+
 
     Public Overrides ReadOnly Property ToolStripDropDownBackground As Color
         Get

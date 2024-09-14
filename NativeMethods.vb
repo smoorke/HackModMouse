@@ -7,6 +7,10 @@ Module NativeMethods
 
     Public Const WM_NCACTIVATE As Integer = &H86
 
+    Public Const WM_KEYDOWN As Integer = &H100
+    Public Const WM_KEYUP = &H101
+    Public Const WM_CHAR As Integer = &H102
+
     Public Const WM_SYSCOMMAND = &H112
 
     Public Const WM_MOUSEMOVE = &H200
@@ -31,6 +35,8 @@ Module NativeMethods
 
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As IntPtr : End Function
+    <DllImport("user32.dll", CharSet:=CharSet.Auto)>
+    Public Function PostMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As Boolean : End Function
 
     <DllImport("user32.dll")>
     Public Function WindowFromPoint(pt As Point) As IntPtr : End Function

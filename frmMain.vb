@@ -18,7 +18,7 @@ Public Class frmMain
 
         If My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat Then mH.HookMouse()
         'these are off by default to have less false positives on viruscanners
-        'note: when this is enabled debugging lags the mouse a few seconds when hackmod enters break mode
+        'note: if the mouse is hooked debugging lags the mouse a few seconds when hackmod enters break mode
 
     End Sub
     Private Sub frmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
@@ -28,7 +28,10 @@ Public Class frmMain
 
 #Region "Cursor Magic"
     Private Sub tmrTick_Tick(sender As Object, e As EventArgs) Handles tmrTick.Tick 'interval 5077 ms
-        If mudproc IsNot Nothing AndAlso mudproc.HasExited Then SysbootToolStripMenuItem.Enabled = True
+        If mudproc IsNot Nothing AndAlso mudproc.HasExited Then
+            SysbootToolStripMenuItem.Enabled = True
+            setGuiVfxBendToolStripMenuItem.Enabled = False
+        End If
         CursorMagic()
         'Debug.Print($"{mudproc?.MainWindowTitle}:{mudproc?.Id}:{hackMudHandle}")
     End Sub
@@ -171,8 +174,15 @@ Public Class frmMain
         XmbclickToolStripMenuItem.Checked = My.Settings.xmbclick
         WheelScrollActivateToolStripMenuItem.Checked = My.Settings.scrollActivate
 
-        For Each item As ToolStripMenuItem In SysconfigureToolStripMenuItem.DropDownItems.OfType(Of ToolStripMenuItem)
-            item.Image = If(item.Checked, My.Resources.goodmud, Nothing)
+        setGuiVfxBendToolStripMenuItem.Enabled = mudproc IsNot Nothing
+
+        For Each item As ToolStripItem In SysconfigureToolStripMenuItem.DropDownItems
+            If TypeOf item Is ToolStripSeparator Then
+                Exit For
+            Else
+                Dim mitem As ToolStripMenuItem = item
+                mitem.Image = If(mitem.Checked, My.Resources.goodmud, Nothing)
+            End If
         Next
 
     End Sub
@@ -217,6 +227,27 @@ Public Class frmMain
 
         SetForegroundWindow(hackMudHandle)
     End Sub
+
+    Private Sub setGuiVfxBendToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles setGuiVfxBendToolStripMenuItem.Click
+
+        'send esc
+        SendMessage(hackMudHandle, WM_KEYDOWN, Keys.Escape, 1)  ' esc down
+        SendMessage(hackMudHandle, WM_KEYUP, Keys.Escape, 1 << 31)    ' esc up
+        SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0)    ' needed for esc to take
+
+        'send text
+        Dim text = "gui.vfx{bend:0}"
+        For i = 0 To text.Count() - 1
+            PostMessage(hackMudHandle, WM_CHAR, Asc(text.Chars(i)), 0)
+        Next
+
+        'send enter
+        SendMessage(hackMudHandle, WM_CHAR, Keys.Return, 0)
+
+    End Sub
+
+
+
 #End Region
 
 End Class
