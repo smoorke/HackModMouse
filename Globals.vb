@@ -50,6 +50,11 @@ Module Globals
         Public dwExtraInfo As IntPtr
     End Structure
     <Flags>
+    Public Enum MouseData
+        XBUTTON1 = &H1
+        XBUTTON2 = &H2
+    End Enum
+    <Flags>
     Public Enum MouseEventF
         Move = &H1
         LeftDown = &H2
@@ -87,7 +92,7 @@ Module Globals
         Public wParamH As Short
     End Structure
 
-    Public Sub SendMouseInput(flags As MouseEventF, mouseData As UInt32)
+    Public Sub SendMouseInput(flags As MouseEventF, mouseData As MouseData)
         MouseInpt(0).mi.dwFlags = flags
         MouseInpt(0).mi.mouseData = mouseData
         SendInput(1, MouseInpt, Marshal.SizeOf(GetType(INPUT)))

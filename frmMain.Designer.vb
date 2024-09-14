@@ -23,8 +23,8 @@ Partial Class frmMain
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim ToolStripMenuItem1 As System.Windows.Forms.ToolStripSeparator
-        Dim ToolStripMenuItem2 As System.Windows.Forms.ToolStripSeparator
+        Dim ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
+        Dim ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.tmrTick = New System.Windows.Forms.Timer(Me.components)
         Me.trayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
@@ -36,22 +36,22 @@ Partial Class frmMain
         Me.XmbclickToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.WheelScrollActivateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
-        ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
+        ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
+        ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         Me.cmsTray.SuspendLayout()
         Me.SuspendLayout()
         '
-        'ToolStripMenuItem1
+        'ToolStripSeparator1
         '
-        ToolStripMenuItem1.ForeColor = System.Drawing.SystemColors.ControlText
-        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        ToolStripMenuItem1.Size = New System.Drawing.Size(177, 6)
+        ToolStripSeparator1.Name = "ToolStripSeparator1"
+        ToolStripSeparator1.Size = New System.Drawing.Size(177, 6)
+        ToolStripSeparator1.Tag = "DefRender"
         '
-        'ToolStripMenuItem2
+        'ToolStripSeparator2
         '
-        ToolStripMenuItem2.ForeColor = System.Drawing.SystemColors.ControlText
-        ToolStripMenuItem2.Name = "ToolStripMenuItem2"
-        ToolStripMenuItem2.Size = New System.Drawing.Size(177, 6)
+        ToolStripSeparator2.Name = "ToolStripSeparator2"
+        ToolStripSeparator2.Size = New System.Drawing.Size(177, 6)
+        ToolStripSeparator2.Tag = "DefRender"
         '
         'tmrTick
         '
@@ -67,7 +67,7 @@ Partial Class frmMain
         '
         'cmsTray
         '
-        Me.cmsTray.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SysbootToolStripMenuItem, ToolStripMenuItem2, Me.SysconfigureToolStripMenuItem, ToolStripMenuItem1, Me.ExitToolStripMenuItem})
+        Me.cmsTray.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SysbootToolStripMenuItem, ToolStripSeparator1, Me.SysconfigureToolStripMenuItem, ToolStripSeparator2, Me.ExitToolStripMenuItem})
         Me.cmsTray.Name = "cmsTray"
         Me.cmsTray.Size = New System.Drawing.Size(181, 82)
         '
@@ -76,12 +76,13 @@ Partial Class frmMain
         Me.SysbootToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.HackMod
         Me.SysbootToolStripMenuItem.Name = "SysbootToolStripMenuItem"
         Me.SysbootToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.SysbootToolStripMenuItem.Tag = "DefRender"
         Me.SysbootToolStripMenuItem.Text = "sys.boot"
         '
         'SysconfigureToolStripMenuItem
         '
         Me.SysconfigureToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CursorshowToolStripMenuItem, Me.LeftclickcompatToolStripMenuItem, Me.XmbclickToolStripMenuItem, Me.WheelScrollActivateToolStripMenuItem})
-        Me.SysconfigureToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.gear_wheel
+        Me.SysconfigureToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.mud
         Me.SysconfigureToolStripMenuItem.Name = "SysconfigureToolStripMenuItem"
         Me.SysconfigureToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SysconfigureToolStripMenuItem.Text = "sys.configure"
@@ -112,10 +113,13 @@ Partial Class frmMain
         '
         'ExitToolStripMenuItem
         '
-        Me.ExitToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.Close
+        Me.ExitToolStripMenuItem.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
+        Me.ExitToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.badmud
         Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
         Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.ExitToolStripMenuItem.Tag = ""
         Me.ExitToolStripMenuItem.Text = "hackmod.shutdown"
+        Me.ExitToolStripMenuItem.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage
         '
         'frmMain
         '

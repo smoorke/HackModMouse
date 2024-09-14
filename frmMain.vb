@@ -18,7 +18,7 @@ Public Class frmMain
 
         If My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat Then mH.HookMouse()
         'these are off by default to have less false positives on viruscanners
-        'note: when this is enabled debugging lags the mouse a few seconds when hackmod is in break mode
+        'note: when this is enabled debugging lags the mouse a few seconds when hackmod enters break mode
 
     End Sub
     Private Sub frmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
@@ -97,17 +97,19 @@ Public Class frmMain
 #Region "Menu Theming"
     Private Sub SetMenuTheme(col As Color)
         cmsTray.Renderer = New ThemedRenderer(col)
-        SetForeColorRecurse(cmsTray.Items, col)
+        SetThemeRecurse(cmsTray.Items, col)
     End Sub
-    Private Sub SetForeColorRecurse(collection As ToolStripItemCollection, col As Color)
+    Private Sub SetThemeRecurse(collection As ToolStripItemCollection, col As Color)
         For Each item As ToolStripMenuItem In collection.OfType(Of ToolStripMenuItem) ' skip separators
             item.ForeColor = col
-            If item.HasDropDown Then SetForeColorRecurse(item.DropDownItems, col)
+            AddHandler item.MouseEnter, Sub(s As ToolStripMenuItem, e As EventArgs) s.ForeColor = Color.White
+            AddHandler item.MouseLeave, Sub(s As ToolStripMenuItem, e As EventArgs) s.ForeColor = col
+            If item.HasDropDown Then SetThemeRecurse(item.DropDownItems, col)
         Next
     End Sub
 #End Region
 
-#Region "Font Setters"
+#Region "setFont"
     Private Sub setFont()
         Try
 
@@ -130,7 +132,6 @@ Public Class frmMain
             Debug.Print($"bab0 setting font {ex.Message}")
         End Try
     End Sub
-
     Private Sub setFontRecurse(collection As ToolStripItemCollection, fnt As Font)
         For Each item As ToolStripMenuItem In collection.OfType(Of ToolStripMenuItem) ' skip separators
             item.Font = fnt
@@ -140,19 +141,19 @@ Public Class frmMain
 #End Region
 
 #Region "trayIcon and Contextmenu"
-    Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
+    Private Sub ExitToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles ExitToolStripMenuItem.Click
         mH.UnhookMouse()
         Me.Close()
     End Sub
 
-    Private Sub cmsTray_Opening(sender As Object, e As CancelEventArgs) Handles cmsTray.Opening
+    Private Sub cmsTray_Opening(sender As ContextMenuStrip, e As CancelEventArgs) Handles cmsTray.Opening
         SysbootToolStripMenuItem.Enabled = mudproc Is Nothing
         SetCursorVisibility(True)
 
         ' this is for when OOP crackers send esc followed by WM_ACTIVATE, SetForegroundWindow() or AppActivate()
         SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0) 'prevents the menu from closing when the above happens
         ' Note: you need to unminimize hackmud before sending esc or it will fail
-        '   in your OOP WM_ACTIVATE is preferred as it doesn't make hackmud pop to front nor steal focus
+        '   in your OOG WM_ACTIVATE is preferred as it doesn't make hackmud pop to front nor steal focus
         ' Note: the closing is a sideffect of setting GWL_HWNDPARENT
 
         If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
@@ -160,12 +161,11 @@ Public Class frmMain
         If mH.HookHandle = IntPtr.Zero Then mH.HookMouse() ' additional logic in mousehook to close menu when appropriate
     End Sub
 
-    Private Sub cmsTray_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsTray.Closed
+    Private Sub cmsTray_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsTray.Closed
         Debug.Print("systray closed")
         SetCursorVisibility(My.Settings.showcursor)
-        If Not (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat) Then mH.UnhookMouse()
     End Sub
-    Private Sub SysconfigureToolStripMenuItem_DropDownOpening(sender As Object, e As EventArgs) Handles SysconfigureToolStripMenuItem.DropDownOpening
+    Private Sub SysconfigureToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles SysconfigureToolStripMenuItem.DropDownOpening
         CursorshowToolStripMenuItem.Checked = My.Settings.showcursor
         LeftclickcompatToolStripMenuItem.Checked = My.Settings.lcCompat
         XmbclickToolStripMenuItem.Checked = My.Settings.xmbclick
@@ -194,9 +194,12 @@ Public Class frmMain
                 My.Settings.scrollActivate = sender.Checked
                 If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then mH.HookMouse()
         End Select
+
+        'counter-intuitively the click event fires after the closed event
+        If Not (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat) Then mH.UnhookMouse()
     End Sub
 
-    Private Sub SysbootToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SysbootToolStripMenuItem.Click
+    Private Sub SysbootToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles SysbootToolStripMenuItem.Click
         Dim pp As Process = Nothing
         Try
             pp = Process.Start("explorer", "steam://rungameid/469920")
@@ -207,13 +210,12 @@ Public Class frmMain
         End Try
     End Sub
 
-    Private Sub cmsTray_Click(sender As Object, e As MouseEventArgs) Handles trayIcon.MouseDoubleClick
+    Private Sub TrayIcon_DoubleClick(sender As NotifyIcon, e As MouseEventArgs) Handles trayIcon.MouseDoubleClick
         If e.Button <> MouseButtons.Left Then Exit Sub
 
         If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
 
         SetForegroundWindow(hackMudHandle)
-
     End Sub
 #End Region
 

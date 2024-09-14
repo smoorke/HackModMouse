@@ -45,10 +45,13 @@ Public Class MouseHook : Implements IDisposable
             Dim mhs As MSLLHOOKSTRUCT = Marshal.PtrToStructure(Of MSLLHOOKSTRUCT)(lParam)
 
             Select Case wParam.ToInt32()
+
                 Case WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN
                     cmsTray.Closer() ' close the tricked menu properly when clicking hackmud
-                Case WM_LBUTTONUP
+
+                Case WM_LBUTTONUP ' small delay to prevent dragbox. may need tweaking
                     If My.Settings.lcCompat AndAlso GetForegroundWindow() = hackMudHandle Then Threading.Thread.Sleep(16)
+
                 Case WM_XBUTTONDOWN
                     If My.Settings.xmbclick Then ' send a left click
                         If (mhs.mousedata And &HFFFF0000) AndAlso WindowFromPoint(mhs.pt) = hackMudHandle AndAlso
@@ -71,18 +74,19 @@ Public Class MouseHook : Implements IDisposable
 
                         'activate the window
                         'needs Task.Run or there is lag
-                        Task.Run(Sub() SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)) 'inject xmb to activate window
+                        Task.Run(Sub() SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, MouseData.XBUTTON1 Or MouseData.XBUTTON2))
 
                         'SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0) 'doesn't work
 
                         'SetForegroundWindow(hackMudHandle) 'doesn't work if not debugging
 
+#If DEBUG Then
                         'Todo: find a way to scroll w/o activating if possible
-#If debug Then
                         Dim delta As Integer = (mhs.mousedata And &HFFFF0000) >> 16
                         Debug.Print($"inactive scroll {delta}")
 #End If
                     End If
+
             End Select
 
         End If
@@ -102,6 +106,7 @@ Public Class MouseHook : Implements IDisposable
     Public Sub UnhookMouse()
         If HookHandle <> IntPtr.Zero Then
             UnhookWindowsHookEx(HookHandle)
+            Debug.Print("Mouse unhooked")
             HookHandle = IntPtr.Zero
         End If
     End Sub

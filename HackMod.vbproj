@@ -141,5 +141,11 @@
   <ItemGroup>
     <None Include="Resources\goodmud.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\badmud.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\mud.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
