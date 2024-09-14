@@ -3,6 +3,11 @@ Imports System.Runtime.InteropServices
 
 Module NativeMethods
 
+    Public Const WA_ACTIVE = &H1
+    Public Const WA_CLICKACTIVE = &H2
+    Public Const WA_INACTIVE = &H0
+    Public Const WA_MINIMIZED = &H1 << 16
+
     Public Const WM_ACTIVATE = &H6
 
     Public Const WM_NCACTIVATE As Integer = &H86
