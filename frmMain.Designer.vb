@@ -64,7 +64,7 @@ Partial Class frmMain
         'tmrTick
         '
         Me.tmrTick.Enabled = True
-        Me.tmrTick.Interval = 5077
+        Me.tmrTick.Interval = 1337
         '
         'trayIcon
         '
@@ -77,7 +77,7 @@ Partial Class frmMain
         '
         Me.cmsTray.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SysbootToolStripMenuItem, ToolStripSeparator1, Me.SysconfigureToolStripMenuItem, ToolStripSeparator2, Me.ExitToolStripMenuItem})
         Me.cmsTray.Name = "cmsTray"
-        Me.cmsTray.Size = New System.Drawing.Size(181, 104)
+        Me.cmsTray.Size = New System.Drawing.Size(181, 82)
         '
         'SysbootToolStripMenuItem
         '
