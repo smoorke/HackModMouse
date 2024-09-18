@@ -77,45 +77,18 @@
     End Sub
 
     Protected Overrides Sub OnRenderItemCheck(e As ToolStripItemImageRenderEventArgs)
-        ' Prevent default checkbox from rendering
+        My.Resources.goodmud.RenderWithAspect(e)
     End Sub
     Protected Overrides Sub OnRenderItemImage(e As ToolStripItemImageRenderEventArgs)
-        ' Draw the image with correct aspect ratio
-        If e.Image IsNot Nothing Then
-
-            Dim g As Graphics = e.Graphics
-            Dim rect As Rectangle = e.ImageRectangle
-
-            ' Calculate aspect ratio
-            Dim aspect As Single = e.Image.Width / e.Image.Height
-
-            ' Calculate new dimensions while maintaining aspect ratio
-            Dim w As Integer = rect.Width
-            Dim h As Integer = rect.Height
-
-            ' Apply aspect correction
-            If aspect <= 1 Then
-                w *= aspect
-            Else
-                h /= aspect
+        Dim img As Image = e.Image
+        If Not e.Item.Enabled Then
+            img = CreateDisabledImage(e.Image)
+        Else
+            If e.Item.Text.StartsWith(">>") AndAlso Not e.Item.Selected Then
+                img = img.AsGrayscale
             End If
-
-            ' Center the image in the rectangle
-            Dim x As Integer = rect.X + (rect.Width - w) \ 2
-            Dim y As Integer = rect.Y + (rect.Height - h) \ 2
-
-            Dim img As Image = e.Image
-
-            If Not e.Item.Enabled Then
-                img = CreateDisabledImage(e.Image)
-            Else
-                If e.Item.Text.StartsWith(">>") AndAlso Not e.Item.Selected Then
-                    img = img.AsGrayscale
-                End If
-            End If
-            ' Draw the image
-            g.DrawImage(img, x, y, w, h)
         End If
+        img.RenderWithAspect(e)
     End Sub
 
 End Class
@@ -141,10 +114,34 @@ Module ImageExtension
             End Using
             Return bmp
         Catch ex As Exception
-            Debug.Print($"Exception in AsGrayscaleWith75Brightness {ex.Message}")
+            Debug.Print($"Exception in AsGrayscale {ex.Message}")
             Return Nothing
         End Try
     End Function
+    <Runtime.CompilerServices.Extension()>
+    Public Sub RenderWithAspect(img As Image, e As ToolStripItemImageRenderEventArgs)
+
+        Dim rect = e.ImageRectangle
+
+        Dim aspect As Single = img.Width / img.Height
+
+        Dim w As Integer = rect.Width
+        Dim h As Integer = rect.Height
+
+        ' Apply aspect correction
+        If aspect <= 1 Then
+            w *= aspect
+        Else
+            h /= aspect
+        End If
+
+        ' Center the image in the rectangle
+        Dim x As Integer = rect.X + (rect.Width - w) \ 2
+        Dim y As Integer = rect.Y + (rect.Height - h) \ 2
+
+        ' Draw the image
+        e.Graphics.DrawImage(img, x, y, w, h)
+    End Sub
 End Module
 
 Public Class ThemedToolStripColorTable : Inherits ProfessionalColorTable
@@ -175,7 +172,7 @@ Public Class ThemedToolStripColorTable : Inherits ProfessionalColorTable
 
     Public Overrides ReadOnly Property ImageMarginGradientBegin As Color
         Get
-            Return col
+            Return Me.col
         End Get
     End Property
     Public Overrides ReadOnly Property ImageMarginGradientMiddle As Color
@@ -192,7 +189,7 @@ Public Class ThemedToolStripColorTable : Inherits ProfessionalColorTable
 
     Public Overrides ReadOnly Property MenuItemSelected As Color
         Get
-            Return col
+            Return Me.col
         End Get
     End Property
 

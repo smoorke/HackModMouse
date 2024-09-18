@@ -175,16 +175,6 @@ Public Class frmMain
         WheelScrollActivateToolStripMenuItem.Checked = My.Settings.scrollActivate
 
         GuiVfxBendToolStripMenuItem.Enabled = mudproc IsNot Nothing
-
-        For Each item As ToolStripItem In SysconfigureToolStripMenuItem.DropDownItems
-            If TypeOf item Is ToolStripSeparator Then
-                Exit For
-            Else
-                Dim mitem As ToolStripMenuItem = item
-                mitem.Image = If(mitem.Checked, My.Resources.goodmud, Nothing)
-            End If
-        Next
-
     End Sub
 
     Private Sub SysconfigureItemToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CursorshowToolStripMenuItem.Click, LeftclickcompatToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click, WheelScrollActivateToolStripMenuItem.Click
