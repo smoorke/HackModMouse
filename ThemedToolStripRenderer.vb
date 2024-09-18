@@ -140,7 +140,9 @@ Module ImageExtension
         Dim y As Integer = rect.Y + (rect.Height - h) \ 2
 
         ' Draw the image
+        e.Graphics.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
         e.Graphics.DrawImage(img, x, y, w, h)
+        e.Graphics.InterpolationMode = Drawing2D.InterpolationMode.Default
     End Sub
 End Module
 
