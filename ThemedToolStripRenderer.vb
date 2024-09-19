@@ -15,16 +15,9 @@
             e = New ToolStripItemTextRenderEventArgs(e.Graphics, e.Item, e.Text, rc, e.TextColor, e.TextFont, e.TextFormat)
         End If
 
-        If Not e.Text.StartsWith(">>") OrElse Not e.Item.Enabled OrElse Not e.Item.Selected Then
-            MyBase.OnRenderItemText(e)
-            Return
-        End If
-
-        Dim item As ToolStripItem = e.Item
         Dim graphics As Graphics = e.Graphics
-        Dim textColor As Color = e.TextColor
-        Dim textFont As Font = e.TextFont
-        'Dim italicFont As New Font(textFont, FontStyle.Italic)
+
+        Dim italicFont As New Font(e.TextFont, FontStyle.Italic)
         Dim text As String = e.Text
         Dim textRectangle As Rectangle = e.TextRectangle
         Dim textFormat As TextFormatFlags = e.TextFormat
@@ -35,6 +28,7 @@
                                  Color.FromArgb(&HFF1EFF00),
                                  Color.FromArgb(&HFF00FFFF),
                                  Color.FromArgb(&HFFFF00EC)}
+        ' TODO: proper colormapper instead of hardcoding just the 1 instance
 
         ' Draw each characters individually with color map
         Dim charHeight As Integer = 12 ' Approximate character height
@@ -42,20 +36,27 @@
         Dim xPos As Integer = textRectangle.Left
         Dim yPos As Integer = (textRectangle.Top + textRectangle.Height) / 2 - charHeight / 2
         Dim colorIndex As Integer = -1
+        Dim braces = "} {"
+
+        Dim drawColor As Color = If(e.Item.Enabled, e.TextColor, SystemColors.GrayText)
 
         For i As Integer = 0 To text.Length - 1
             Dim currentChar As Char = text(i)
-            Dim drawColor As Color
 
-            ' Determine color based on character type
-            If Char.IsLetterOrDigit(currentChar) Then
-                drawColor = colors(colorIndex)
-            Else
-                drawColor = colors(0)
-                colorIndex += 1
+            Dim isBrace = braces.Contains(currentChar)
+
+            If e.Text.StartsWith(">>") AndAlso e.Item.Selected AndAlso e.Item.Enabled Then
+                ' Determine color based on character type
+                If Char.IsLetterOrDigit(currentChar) Then
+                    drawColor = colors(colorIndex)
+                Else
+                    drawColor = colors(0)
+                    colorIndex += 1
+                End If
             End If
 
-            TextRenderer.DrawText(graphics, currentChar.ToString(), textFont, New Rectangle(xPos, yPos, charWidth, charHeight), drawColor, textFormat)
+            ' Render letter with { brace offset 2 pix to the left
+            TextRenderer.DrawText(graphics, $"{currentChar}", If(isBrace, italicFont, e.TextFont), New Rectangle(xPos - If(isBrace, braces.IndexOf(currentChar), 0), yPos, charWidth, charHeight), drawColor, textFormat)
 
             ' Update xPos for the next character
             xPos += 7
