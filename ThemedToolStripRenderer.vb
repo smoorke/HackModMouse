@@ -16,7 +16,7 @@
         End If
 
         Dim graphics As Graphics = e.Graphics
-
+        Dim textFont = e.TextFont
         Dim italicFont As New Font(e.TextFont, FontStyle.Italic)
         Dim text As String = e.Text
         Dim textRectangle As Rectangle = e.TextRectangle
@@ -39,13 +39,14 @@
         Dim braces = "} {"
 
         Dim drawColor As Color = If(e.Item.Enabled, e.TextColor, SystemColors.GrayText)
+        Dim needsColor = text.StartsWith(">>") AndAlso e.Item.Selected AndAlso e.Item.Enabled
 
         For i As Integer = 0 To text.Length - 1
             Dim currentChar As Char = text(i)
 
             Dim isBrace = braces.Contains(currentChar)
 
-            If e.Text.StartsWith(">>") AndAlso e.Item.Selected AndAlso e.Item.Enabled Then
+            If needsColor Then
                 ' Determine color based on character type
                 If Char.IsLetterOrDigit(currentChar) Then
                     drawColor = colors(colorIndex)
@@ -56,7 +57,7 @@
             End If
 
             ' Render letter with { brace offset 2 pix to the left
-            TextRenderer.DrawText(graphics, $"{currentChar}", If(isBrace, italicFont, e.TextFont), New Rectangle(xPos - If(isBrace, braces.IndexOf(currentChar), 0), yPos, charWidth, charHeight), drawColor, textFormat)
+            TextRenderer.DrawText(graphics, $"{currentChar}", If(isBrace, italicFont, textFont), New Rectangle(xPos - If(isBrace, braces.IndexOf(currentChar), 0), yPos, charWidth, charHeight), drawColor, textFormat)
 
             ' Update xPos for the next character
             xPos += 7
