@@ -85,10 +85,8 @@
         Dim img As Image = e.Image
         If Not e.Item.Enabled Then
             img = CreateDisabledImage(e.Image)
-        Else
-            If e.Item.Text.StartsWith(">>") AndAlso Not e.Item.Selected Then
-                img = img.AsGrayscale
-            End If
+        ElseIf e.Item.Text.StartsWith(">>") AndAlso Not e.Item.Selected Then
+            img = img.AsGrayscale
         End If
         img.RenderWithAspect(e)
     End Sub
