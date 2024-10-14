@@ -141,5 +141,8 @@
   <ItemGroup>
     <None Include="Resources\mud.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\whitrabt.ttf\license.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

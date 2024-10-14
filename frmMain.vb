@@ -3,8 +3,7 @@ Imports System.Drawing.Text
 
 Public Class frmMain
     Private mH As MouseHook = New MouseHook
-    Private appdataHMod As String = IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "hackmod\")
-    Private pfc As New PrivateFontCollection
+
 #Region "StartupSequence"
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
 
@@ -17,12 +16,13 @@ Public Class frmMain
         SetCursorVisibility(My.Settings.showcursor)
 
         If My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat Then mH.HookMouse()
-        'these are off by default to have less false positives on viruscanners
-        'note: if the mouse is hooked debugging lags the mouse a few seconds when hackmod enters break mode
+        ' these are off by default to have less false positives on viruscanners
+        ' note: if the mouse is hooked debugging lags the mouse a few seconds when hackmod enters break mode
 
     End Sub
     Private Sub frmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-        SetForegroundWindow(hackMudHandle)
+        ' something brings hackmud to front but doesn't activate it
+        SetForegroundWindow(hackMudHandle) 'thus we activate it so input is as expected
     End Sub
 #End Region
 
@@ -45,16 +45,17 @@ Public Class frmMain
         mudproc = pp
         hackMudHandle = If(mudproc?.MainWindowHandle, IntPtr.Zero)
 
-        'set the parent to hackmud, note docs state you should use SetParent,
+        ' set the parent to hackmud, note docs state you should use SetParent,
         '         however we don't do that to make ShowCursor work, why this works is a mystery to me.
-        'to be honest i never managed to get SetParent to do the things i want in my other projects either.
+        ' to be honest i never managed to get SetParent to do the things i want in my other projects either.
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, hackMudHandle)
 
     End Sub
 
     Private ShowValue As Integer
-    'this only works because of the GWL_HWNDPARENT
     Private Sub SetCursorVisibility(visible As Boolean)
+        ' this only works because of the GWL_HWNDPARENT
+
         ' ensure the cursor is visible if the handle is not valid
         If hackMudHandle = IntPtr.Zero Then visible = True
 
@@ -113,6 +114,9 @@ Public Class frmMain
 #End Region
 
 #Region "setFont"
+    Private appdataHMod As String = IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "hackmod\")
+    Private pfc As New PrivateFontCollection
+
     Private Sub setFont()
         Try
 
@@ -123,6 +127,8 @@ Public Class frmMain
                 IO.Directory.CreateDirectory(appdataHMod)
                 'write font to disk
                 FileIO.FileSystem.WriteAllBytes(fontpath, My.Resources.whitrabt, False)
+                'write font licence to font dir
+                FileIO.FileSystem.WriteAllText(IO.Path.Combine(appdataHMod, "whitrabt_license.txt"), My.Resources.whitrabt_license, False)
             End If
 
             pfc.AddFontFile(fontpath)
@@ -156,7 +162,7 @@ Public Class frmMain
         ' this is for when OOP crackers send esc followed by WM_ACTIVATE, SetForegroundWindow() or AppActivate()
         SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0) 'prevents the menu from closing when the above happens
         ' Note: you need to unminimize hackmud before sending esc or it will fail
-        '   in your OOG WM_ACTIVATE is preferred as it doesn't make hackmud pop to front nor steal focus
+        '   in your OOP WM_ACTIVATE is preferred as it doesn't make hackmud pop to front nor steal focus
         ' Note: the closing is a sideffect of setting GWL_HWNDPARENT
 
         If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
@@ -224,7 +230,7 @@ Public Class frmMain
         SendMessage(hackMudHandle, WM_KEYDOWN, Keys.Escape, 1) ' esc down
         SendMessage(hackMudHandle, WM_KEYUP, Keys.Escape, 1 << 31)   ' esc up
 #If DEBUG Then
-        'redundant as the menu.opening already set hackmud as active but left in for completeness sake as OOG needs it for esc to take (does not work with hm minimized)
+        'redundant as the menu.opening already set hackmud as active but left in for completeness sake as OOP needs it for esc to take (does not work with hm minimized)
         ' see SendEsc for example code to handle unminimizing 
         SendMessage(hackMudHandle, WM_ACTIVATE, WA_ACTIVE, 0) ' needed for esc to take
 #End If

@@ -109,5 +109,23 @@ Namespace My.Resources
                 Return CType(obj,Byte())
             End Get
         End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Copyright (C) 1999 by Matthew Welch
+        '''
+        '''Permission is hereby granted, free of charge, to any person obtaining a copy of
+        '''this font software and associated documentation files (the &quot;Software&quot;), to deal
+        '''in the Software without restriction, including without limitation the rights to
+        '''use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+        '''of the Software, and to permit persons to whom the Software is furnished to do
+        '''so, subject to the following conditions:
+        '''
+        '''The above copyright notice  [rest of string was truncated]&quot;;.
+        '''</summary>
+        Friend ReadOnly Property whitrabt_license() As String
+            Get
+                Return ResourceManager.GetString("whitrabt_license", resourceCulture)
+            End Get
+        End Property
     End Module
 End Namespace

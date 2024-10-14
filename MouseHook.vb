@@ -15,7 +15,6 @@ Public Class MouseHook : Implements IDisposable
         Public dwExtraInfo As IntPtr
     End Structure
 
-
     Public Delegate Function MouseHookCallBack(nCode As Integer, wParam As IntPtr, lParam As IntPtr) As Integer
 
     <DllImport("Kernel32.dll", CharSet:=CharSet.Auto, CallingConvention:=CallingConvention.StdCall)>
@@ -34,28 +33,36 @@ Public Class MouseHook : Implements IDisposable
 
     Public HookHandle As IntPtr = IntPtr.Zero
 
-    Private Function MouseProc(
-        ByVal nCode As Integer,
-        ByVal wParam As IntPtr,
-        ByVal lParam As IntPtr) As Integer
+    Private Shared ReadOnly ActivateAndWheel() As INPUT = {
+        New INPUT With { '.type = InputType.INPUT_MOUSE, 'INPUT_MOUSE is 0 so we can omit
+            .mi = New MOUSEINPUT With {.dwFlags = MouseEventF.XDown Or MouseEventF.XUp, .mouseData = MouseData.XBUTTON1 Or MouseData.XBUTTON2}
+        },
+        New INPUT With {
+            .mi = New MOUSEINPUT With {.dwFlags = MouseEventF.Wheel} ' .mouseData varies depending on direction          
+        }
+    }
+    Private ReadOnly InputSize = Marshal.SizeOf(GetType(INPUT))
+
+    Private Function MouseProc(nCode As Integer, wParam As IntPtr, lParam As IntPtr) As Integer
+
+        'IMPORTANT: this is needed or we get false positive from Google and GitHub bans on pushing a release
         If nCode <> HC_ACTION Then Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
 
         If nCode = HC_ACTION AndAlso (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat OrElse cmsTray.Visible) Then
 
             Dim mhs As MSLLHOOKSTRUCT = Marshal.PtrToStructure(Of MSLLHOOKSTRUCT)(lParam)
 
+            'don't act on injected event
+            If mhs.flags <> 0 Then Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
+
             Select Case wParam.ToInt32()
 
-                Case WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN
-                    cmsTray.Closer() ' close the tricked menu properly when clicking hackmud
-
-                Case WM_LBUTTONUP ' small delay to prevent dragbox. may need tweaking
+                Case WM_LBUTTONUP ' small delay to prevent dragbox when using vnc. may need tweaking
                     If My.Settings.lcCompat AndAlso GetForegroundWindow() = hackMudHandle Then Threading.Thread.Sleep(16)
 
                 Case WM_XBUTTONDOWN
                     If My.Settings.xmbclick Then ' send a left click
-                        If (mhs.mousedata And &HFFFF0000) AndAlso WindowFromPoint(mhs.pt) = hackMudHandle AndAlso
-                            mhs.flags = 0 Then 'don't click on injected event
+                        If (mhs.mousedata And &HFFFF0000) AndAlso WindowFromPoint(mhs.pt) = hackMudHandle Then
                             Debug.Print($"xmbclick {mhs.flags} {mhs.mousedata}")
                             SendMessage(hackMudHandle, WM_LBUTTONDOWN, 0, 0)
                             Threading.Thread.Sleep(1) ' this is needed or we get a dragbox
@@ -65,26 +72,28 @@ Public Class MouseHook : Implements IDisposable
 
                     ' rarely other applications do not close their traymenu when using xmb on their respective window
                     ' i'm opting to follow the majority here and close it, the same applies for MBUTTONDOWN
-                    cmsTray.Closer() ' close the tricked menu properly when clicking hackmud
+                    cmsTray.Closer() ' close menu when clicking hackmud
+
+                Case WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN
+                    cmsTray.Closer() ' close menu when clicking hackmud
 
                 Case WM_MOUSEWHEEL
                     If My.Settings.scrollActivate AndAlso
-                                GetForegroundWindow() <> hackMudHandle AndAlso
-                                WindowFromPoint(mhs.pt) = hackMudHandle Then
+                      GetForegroundWindow() <> hackMudHandle AndAlso
+                      WindowFromPoint(mhs.pt) = hackMudHandle Then
 
-                        'activate the window
                         'needs Task.Run or there is lag
-                        Task.Run(Sub() SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, MouseData.XBUTTON1 Or MouseData.XBUTTON2))
-
-                        'SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0) 'doesn't work
-
-                        'SetForegroundWindow(hackMudHandle) 'doesn't work if not debugging
+                        Task.Run(Sub()
+                                     ActivateAndWheel(1).mi.mouseData = ((mhs.mousedata And &HFFFF0000) >> 16) / 120
+                                     SendInput(ActivateAndWheel.Length, ActivateAndWheel, InputSize)
+                                 End Sub)
 
 #If DEBUG Then
                         'Todo: find a way to scroll w/o activating if possible
                         Dim delta As Integer = (mhs.mousedata And &HFFFF0000) >> 16
                         Debug.Print($"inactive scroll {delta}")
 #End If
+
                     End If
 
             End Select
