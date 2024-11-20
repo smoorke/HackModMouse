@@ -45,10 +45,7 @@ Public Class MouseHook : Implements IDisposable
 
     Private Function MouseProc(nCode As Integer, wParam As IntPtr, lParam As IntPtr) As Integer
 
-        'IMPORTANT: this is needed or we get false positive from Google and GitHub bans on pushing a release
-        If nCode <> HC_ACTION Then Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
-
-        If nCode = HC_ACTION AndAlso (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat OrElse cmsTray.Visible) Then
+                If nCode = HC_ACTION AndAlso (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat OrElse cmsTray.Visible) Then
 
             Dim mhs As MSLLHOOKSTRUCT = Marshal.PtrToStructure(Of MSLLHOOKSTRUCT)(lParam)
 
@@ -105,11 +102,10 @@ Public Class MouseHook : Implements IDisposable
 
     Private mhCallBack As MouseHookCallBack = New MouseHookCallBack(AddressOf MouseProc)
     Private disposedValue As Boolean
-
+    Private modhandle = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName)
     Public Sub HookMouse()
-        HookHandle = SetWindowsHookEx(WH_MOUSE_LL, mhCallBack,
-            GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName), 0)
-        If HookHandle = IntPtr.Zero Then Throw New System.Exception("Mouse hook bab0")
+        HookHandle = SetWindowsHookEx(WH_MOUSE_LL, mhCallBack, modhandle, 0)
+        If HookHandle = IntPtr.Zero Then Throw New System.Exception($"Mouse hook bab0 {Marshal.GetLastWin32Error}")
     End Sub
 
     Public Sub UnhookMouse()
