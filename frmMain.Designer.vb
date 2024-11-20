@@ -77,7 +77,7 @@ Partial Class frmMain
         '
         'SysbootToolStripMenuItem
         '
-        Me.SysbootToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.HackMod
+        Me.SysbootToolStripMenuItem.Image = Global.HackModMouse.My.Resources.Resources.HackMod
         Me.SysbootToolStripMenuItem.Name = "SysbootToolStripMenuItem"
         Me.SysbootToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SysbootToolStripMenuItem.Tag = ""
@@ -86,7 +86,7 @@ Partial Class frmMain
         'SysconfigureToolStripMenuItem
         '
         Me.SysconfigureToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CursorshowToolStripMenuItem, Me.LeftclickcompatToolStripMenuItem, Me.XmbclickToolStripMenuItem, Me.WheelScrollActivateToolStripMenuItem, ToolStripSeparator3, Me.GuiVfxBendToolStripMenuItem})
-        Me.SysconfigureToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.mud
+        Me.SysconfigureToolStripMenuItem.Image = Global.HackModMouse.My.Resources.Resources.mud
         Me.SysconfigureToolStripMenuItem.Name = "SysconfigureToolStripMenuItem"
         Me.SysconfigureToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SysconfigureToolStripMenuItem.Text = "sys.configure"
@@ -122,7 +122,7 @@ Partial Class frmMain
         '
         'GuiVfxBendToolStripMenuItem
         '
-        Me.GuiVfxBendToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.HackMod
+        Me.GuiVfxBendToolStripMenuItem.Image = Global.HackModMouse.My.Resources.Resources.HackMod
         Me.GuiVfxBendToolStripMenuItem.Name = "GuiVfxBendToolStripMenuItem"
         Me.GuiVfxBendToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.GuiVfxBendToolStripMenuItem.Tag = ""
@@ -131,7 +131,7 @@ Partial Class frmMain
         'ExitToolStripMenuItem
         '
         Me.ExitToolStripMenuItem.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
-        Me.ExitToolStripMenuItem.Image = Global.HackMod.My.Resources.Resources.badmud
+        Me.ExitToolStripMenuItem.Image = Global.HackModMouse.My.Resources.Resources.badmud
         Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
         Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.ExitToolStripMenuItem.Tag = ""

@@ -11,7 +11,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyTitle("HackMod Mouse Enabler")>
 <Assembly: AssemblyDescription("Enable MouseCursor in hackmud")>
 <Assembly: AssemblyCompany("")>
-<Assembly: AssemblyProduct("HackMod")>
+<Assembly: AssemblyProduct("HackModMouse")>
 <Assembly: AssemblyCopyright("Copyright ©  2024")>
 <Assembly: AssemblyTrademark("")>
 

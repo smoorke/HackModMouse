@@ -6,9 +6,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{A8867250-75F5-4F7C-A4BC-978C3EFA8A29}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <StartupObject>HackMod.My.MyApplication</StartupObject>
-    <RootNamespace>HackMod</RootNamespace>
-    <AssemblyName>HackMod</AssemblyName>
+    <StartupObject>HackModMouse.My.MyApplication</StartupObject>
+    <RootNamespace>HackModMouse</RootNamespace>
+    <AssemblyName>HackModMouse</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>WindowsForms</MyType>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
@@ -22,7 +22,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>HackMod.xml</DocumentationFile>
+    <DocumentationFile>HackModMouse.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -32,7 +32,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>HackMod.xml</DocumentationFile>
+    <DocumentationFile>HackModMouse.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
