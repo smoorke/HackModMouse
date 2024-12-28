@@ -42,15 +42,16 @@ Public Class MouseHook : Implements IDisposable
         }
     }
     Private ReadOnly InputSize = Marshal.SizeOf(GetType(INPUT))
-
+    Private injecting As Boolean = False
     Private Function MouseProc(nCode As Integer, wParam As IntPtr, lParam As IntPtr) As Integer
 
-                If nCode = HC_ACTION AndAlso (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat OrElse cmsTray.Visible) Then
+        If nCode = HC_ACTION AndAlso (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat OrElse cmsTray.Visible) Then
 
             Dim mhs As MSLLHOOKSTRUCT = Marshal.PtrToStructure(Of MSLLHOOKSTRUCT)(lParam)
 
             'don't act on injected event
-            If mhs.flags <> 0 Then Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
+            'If mhs.flags <> 0 Then Return CallNextHookEx(HookHandle, nCode, wParam, lParam) 'sunshine/moonlight uses injected events to control the mouse
+            If injecting Then Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
 
             Select Case wParam.ToInt32()
 
@@ -80,10 +81,11 @@ Public Class MouseHook : Implements IDisposable
                       WindowFromPoint(mhs.pt) = hackMudHandle Then
 
                         'needs Task.Run or there is lag
+                        injecting = True
                         Task.Run(Sub()
                                      ActivateAndWheel(1).mi.mouseData = ((mhs.mousedata And &HFFFF0000) >> 16) / 120
                                      SendInput(ActivateAndWheel.Length, ActivateAndWheel, InputSize)
-                                 End Sub)
+                                 End Sub).ContinueWith(Sub() injecting = False)
 
 #If DEBUG Then
                         'Todo: find a way to scroll w/o activating if possible
