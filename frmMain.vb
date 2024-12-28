@@ -201,6 +201,8 @@ Public Class frmMain
                 If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then mH.HookMouse()
         End Select
 
+        My.Settings.Save()
+
         'counter-intuitively the click event fires after the closed event
         If Not (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat) Then mH.UnhookMouse()
     End Sub
