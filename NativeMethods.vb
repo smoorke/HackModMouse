@@ -10,6 +10,8 @@ Module NativeMethods
 
     Public Const WM_ACTIVATE = &H6
 
+    Public Const WM_DISPLAYCHANGE As Integer = &H7E
+
     Public Const WM_NCACTIVATE As Integer = &H86
 
     Public Const WM_KEYDOWN As Integer = &H100
@@ -36,6 +38,18 @@ Module NativeMethods
     Public Const SC_RESTORE As Integer = &HF120
 
     Public Const GWL_HWNDPARENT As Integer = -8
+
+
+    Public Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal hwnd As IntPtr, ByVal dwAttribute As Integer, ByRef pvAttribute As RECT, ByVal cbAttribute As Integer) As Integer
+    Public Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
+
+    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    Public Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Boolean : End Function
+
+    <System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)>
+    Public Structure RECT
+        Public left, top, right, bottom As Integer
+    End Structure
 
 
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>

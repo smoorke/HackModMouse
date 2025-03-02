@@ -23,6 +23,7 @@ Public Class frmMain
     Private Sub frmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         ' something brings hackmud to front but doesn't activate it
         SetForegroundWindow(hackMudHandle) 'thus we activate it so input is as expected
+        MainScreenScaling = MainScreenScalingPercent()
     End Sub
 #End Region
 
@@ -247,6 +248,63 @@ Public Class frmMain
 
     End Sub
 
+#End Region
+
+#Region "WndProc"
+    Protected Overrides Sub WndProc(ByRef m As Message)
+        MyBase.WndProc(m)
+        If m.Msg = WM_DISPLAYCHANGE Then
+            ' Handle the resolution change here
+            ' You can add additional logic to handle the resolution change
+            Dim newScaling = MainScreenScalingPercent()
+            If MainScreenScaling <> newScaling Then
+                Debug.Print("Display scaling changed") 'nudge blurry trayicon so it is sharp again
+                Task.Run(Sub()
+                             Threading.Thread.Sleep(4000)
+                             trayIcon.Visible = False
+                             trayIcon.Visible = True
+                         End Sub)
+                'trayIcon.Icon = Icon.FromHandle(My.Resources.HackMod.GetHicon)
+                MainScreenScaling = newScaling
+            End If
+        End If
+    End Sub
+#End Region
+
+#Region "ScreenScaling"
+
+    Private MainScreenScaling As Integer = 0
+
+    Public Function MainScreenScalingPercent() As Integer
+        Dim scrn = Screen.PrimaryScreen
+        Dim grab As New InactiveForm With {
+            .FormBorderStyle = FormBorderStyle.None,
+            .TransparencyKey = Color.Red,
+            .BackColor = Color.Red,
+            .ShowInTaskbar = False,
+            .StartPosition = FormStartPosition.Manual,
+            .Location = scrn.Bounds.Location
+        }
+        AddHandler grab.Shown, Sub()
+                                   grab.Location += New Point(1, 1) 'need to update the location so the frame changes
+                                   Dim rcFrame As RECT
+                                   DwmGetWindowAttribute(grab.Handle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
+                                   Dim rcWind As RECT
+                                   GetWindowRect(grab.Handle, rcWind)
+                                   grab.Tag = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
+                                   grab.Close()
+                               End Sub
+        grab.ShowDialog()
+        Return grab.Tag
+    End Function
+
+    Private Class InactiveForm : Inherits Form
+        Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
+            Get
+                Return True
+            End Get
+        End Property
+    End Class
 #End Region
 
 #If DEBUG Then
