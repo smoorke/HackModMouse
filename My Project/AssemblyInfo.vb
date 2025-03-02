@@ -12,7 +12,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Enable MouseCursor in hackmud")>
 <Assembly: AssemblyCompany("")>
 <Assembly: AssemblyProduct("HackModMouse")>
-<Assembly: AssemblyCopyright("Copyright ©  2024")>
+<Assembly: AssemblyCopyright("Copyright ©  2025")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")>
 
-<Assembly: AssemblyVersion("1.0.5.0")>
-<Assembly: AssemblyFileVersion("1.0.5.0")>
+<Assembly: AssemblyVersion("1.0.6.0")>
+<Assembly: AssemblyFileVersion("1.0.6.0")>
