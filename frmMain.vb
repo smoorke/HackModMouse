@@ -3,7 +3,7 @@ Imports System.Drawing.Text
 
 Public Class frmMain
     Private mH As MouseHook = New MouseHook
-
+    Private TiD As UInteger
 #Region "StartupSequence"
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
 
@@ -21,10 +21,15 @@ Public Class frmMain
 
     End Sub
     Private Sub frmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-        ' something brings hackmud to front but doesn't activate it
-        SetForegroundWindow(hackMudHandle) 'thus we activate it so input is as expected
+        TiD = GetWindowThreadProcessId(Me.Handle, Nothing)
         MainScreenScaling = MainScreenScalingPercent()
     End Sub
+    Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
+        Get
+            Return True
+        End Get
+    End Property
+
 #End Region
 
 #Region "Cursor Magic"
@@ -46,16 +51,14 @@ Public Class frmMain
         mudproc = pp
         hackMudHandle = If(mudproc?.MainWindowHandle, IntPtr.Zero)
 
-        ' set the parent to hackmud, note docs state you should use SetParent,
-        '         however we don't do that to make ShowCursor work, why this works is a mystery to me.
-        ' to be honest i never managed to get SetParent to do the things i want in my other projects either.
-        SetWindowLong(Me.Handle, GWL_HWNDPARENT, hackMudHandle)
+        If hackMudHandle <> IntPtr.Zero Then
+            AttachThreadInput(GetWindowThreadProcessId(hackMudHandle, Nothing), TiD, True)
+        End If
 
     End Sub
 
     Private ShowValue As Integer
     Private Sub SetCursorVisibility(visible As Boolean)
-        ' this only works because of the GWL_HWNDPARENT
 
         ' ensure the cursor is visible if the handle is not valid
         If hackMudHandle = IntPtr.Zero Then visible = True
@@ -93,7 +96,7 @@ Public Class frmMain
     Protected Overrides ReadOnly Property CreateParams As CreateParams
         Get
             Dim cp As CreateParams = MyBase.CreateParams
-            cp.ExStyle = cp.ExStyle Or WindowStylesEx.WS_EX_TOOLWINDOW ' showintaskbar fails due to the GWL_HWNDPARENT
+            cp.ExStyle = cp.ExStyle Or WindowStylesEx.WS_EX_TOOLWINDOW
             Return cp
         End Get
     End Property
@@ -173,7 +176,6 @@ Public Class frmMain
         SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0) 'prevents the menu from closing when the above happens
         ' Note: you need to unminimize hackmud before sending esc or it will fail
         '   in your OOP WM_ACTIVATE is preferred as it doesn't make hackmud pop to front nor steal focus
-        ' Note: the closing is a sideffect of setting GWL_HWNDPARENT
 
         If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
 
@@ -199,7 +201,7 @@ Public Class frmMain
     End Class
 
     Private Sub cmsTray_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsTray.Closed
-        Debug.Print("systray closed")
+        Debug.Print($"systray closed {e.CloseReason}")
         SetCursorVisibility(My.Settings.showcursor)
         scaleFixForm?.Close()
         scaleFixForm = Nothing
@@ -264,11 +266,9 @@ Public Class frmMain
         'send esc
         SendMessage(hackMudHandle, WM_KEYDOWN, Keys.Escape, 1) ' esc down
         SendMessage(hackMudHandle, WM_KEYUP, Keys.Escape, 1 << 31)   ' esc up
-#If DEBUG Then
-        'redundant as the menu.opening already set hackmud as active but left in for completeness sake as OOP needs it for esc to take (does not work with hm minimized)
-        ' see SendEsc for example code to handle unminimizing 
+
         SendMessage(hackMudHandle, WM_ACTIVATE, WA_ACTIVE, 0) ' needed for esc to take
-#End If
+
         'send text
         Dim text = "gui.vfx{bend:0}"
         For i = 0 To text.Count() - 1
@@ -286,17 +286,14 @@ Public Class frmMain
     Protected Overrides Sub WndProc(ByRef m As Message)
         MyBase.WndProc(m)
         If m.Msg = WM_DISPLAYCHANGE Then
-            ' Handle the resolution change here
-            ' You can add additional logic to handle the resolution change
             Dim newScaling = MainScreenScalingPercent()
             If MainScreenScaling <> newScaling Then
-                Debug.Print("Display scaling changed") 'nudge blurry trayicon so it is sharp again
-                Task.Run(Sub()
+                Debug.Print("Display scaling changed")
+                Task.Run(Sub() 'nudge blurry trayicon so it is sharp again
                              Threading.Thread.Sleep(4000)
                              trayIcon.Visible = False
                              trayIcon.Visible = True
                          End Sub)
-                'trayIcon.Icon = Icon.FromHandle(My.Resources.HackMod.GetHicon)
                 MainScreenScaling = newScaling
             End If
         End If
