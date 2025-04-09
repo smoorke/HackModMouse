@@ -161,14 +161,6 @@ Public Class frmMain
 
     Private Sub cmsTray_Opening(sender As ContextMenuStrip, e As CancelEventArgs) Handles cmsTray.Opening
 
-        If scaleFixForm Is Nothing Then
-            scaleFixForm = New MenuScaleFixForm(Screen.PrimaryScreen)
-            scaleFixForm.Show()
-            Task.Run(Sub() Me.Invoke(Sub() sender.Show()))
-            e.Cancel = True
-            Exit Sub
-        End If
-
         SysbootToolStripMenuItem.Enabled = mudproc Is Nothing
         SetCursorVisibility(True)
 
@@ -182,29 +174,9 @@ Public Class frmMain
         If mH.HookHandle = IntPtr.Zero Then mH.HookMouse() ' additional logic in mousehook to close menu when appropriate
     End Sub
 
-    Shared scaleFixForm As MenuScaleFixForm = Nothing
-    Private NotInheritable Class MenuScaleFixForm : Inherits Form
-        Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
-            Get
-                Return True
-            End Get
-        End Property
-        Public Sub New(scrn As Screen)
-            Me.FormBorderStyle = FormBorderStyle.None
-            Me.BackColor = Color.Red
-            Me.TransparencyKey = Me.BackColor
-            Me.TopMost = True
-            Me.ShowInTaskbar = False
-            Me.StartPosition = FormStartPosition.Manual
-            Me.Location = scrn.Bounds.Location
-        End Sub
-    End Class
-
     Private Sub cmsTray_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsTray.Closed
         Debug.Print($"systray closed {e.CloseReason}")
         SetCursorVisibility(My.Settings.showcursor)
-        scaleFixForm?.Close()
-        scaleFixForm = Nothing
     End Sub
     Private Sub SysconfigureToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles SysconfigureToolStripMenuItem.DropDownOpening
         CursorshowToolStripMenuItem.Checked = My.Settings.showcursor
@@ -215,7 +187,7 @@ Public Class frmMain
         GuiVfxBendToolStripMenuItem.Enabled = mudproc IsNot Nothing
 
         'scaling fix
-        SetWindowPos(scaleFixForm.Handle, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
+        SetWindowPos(Me.Handle, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
     End Sub
 
     Private Sub SysconfigureItemToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CursorshowToolStripMenuItem.Click, LeftclickcompatToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click, WheelScrollActivateToolStripMenuItem.Click
