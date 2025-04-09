@@ -45,8 +45,7 @@ Module NativeMethods
 
     <System.Runtime.InteropServices.DllImport("user32.dll")>
     Public Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Boolean : End Function
-    <DllImport("user32.dll")>
-    Public Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Boolean : End Function
+
     <System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)>
     Public Structure RECT
         Public left, top, right, bottom As Integer
@@ -151,8 +150,7 @@ Module NativeMethods
 
     <DllImport("user32.dll")>
     Public Function WindowFromPoint(pt As Point) As IntPtr : End Function
-    <DllImport("user32.dll")>
-    Public Function SetActiveWindow(hWnd As IntPtr) As IntPtr : End Function
+
     <DllImport("user32.dll")>
     Public Function SetForegroundWindow(hWnd As IntPtr) As Boolean : End Function
 
@@ -160,14 +158,12 @@ Module NativeMethods
     Public Function GetForegroundWindow() As IntPtr : End Function
 
     <DllImport("user32.dll")>
-    Public Function GetDesktopWindow() As IntPtr : End Function
+    Public Function GetWindowThreadProcessId(ByVal hWnd As IntPtr, <Out()> ByRef lpdwProcessId As UInteger) As UInteger : End Function
 
-
-
-    <DllImport("user32.dll")>
-    Public Function SetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer, ByVal dwNewLong As UInteger) As Integer : End Function
-
-
+    Public Declare Function AttachThreadInput Lib "user32.dll" (
+    ByVal idAttach As Integer,
+    ByVal idAttachTo As Integer,
+    ByVal fAttach As Boolean) As Boolean
 
     <DllImport("user32.dll")>
     Public Function ShowCursor(bShow As Boolean) As Integer : End Function
