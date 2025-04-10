@@ -3,7 +3,8 @@ Imports System.Drawing.Text
 
 Public Class frmMain
     Private mH As MouseHook = New MouseHook
-    Private TiD As UInteger
+    Private MeTiD As UInteger = GetWindowThreadProcessId(Me.Handle, Nothing)
+
 #Region "StartupSequence"
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
 
@@ -21,7 +22,6 @@ Public Class frmMain
 
     End Sub
     Private Sub frmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-        TiD = GetWindowThreadProcessId(Me.Handle, Nothing)
         MainScreenScaling = MainScreenScalingPercent()
     End Sub
     Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
@@ -52,7 +52,7 @@ Public Class frmMain
         hackMudHandle = If(mudproc?.MainWindowHandle, IntPtr.Zero)
 
         If hackMudHandle <> IntPtr.Zero Then
-            AttachThreadInput(GetWindowThreadProcessId(hackMudHandle, Nothing), TiD, True)
+            AttachThreadInput(GetWindowThreadProcessId(hackMudHandle, Nothing), MeTiD, True)
         End If
 
     End Sub
