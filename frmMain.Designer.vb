@@ -25,13 +25,15 @@ Partial Class frmMain
         Me.components = New System.ComponentModel.Container()
         Dim ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Dim ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
+        Dim ToolStripSeparator4 As System.Windows.Forms.ToolStripSeparator
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.tmrTick = New System.Windows.Forms.Timer(Me.components)
         Me.trayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
         Me.cmsTray = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.SysbootToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.SysconfigureToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.AutoBootToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CursorshowToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.LeftclickcompatToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.XmbclickToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -41,6 +43,7 @@ Partial Class frmMain
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
+        ToolStripSeparator4 = New System.Windows.Forms.ToolStripSeparator()
         Me.cmsTray.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -55,6 +58,16 @@ Partial Class frmMain
         ToolStripSeparator2.Name = "ToolStripSeparator2"
         ToolStripSeparator2.Size = New System.Drawing.Size(177, 6)
         ToolStripSeparator2.Tag = "DefRender"
+        '
+        'ToolStripSeparator3
+        '
+        ToolStripSeparator3.Name = "ToolStripSeparator3"
+        ToolStripSeparator3.Size = New System.Drawing.Size(186, 6)
+        '
+        'ToolStripSeparator4
+        '
+        ToolStripSeparator4.Name = "ToolStripSeparator4"
+        ToolStripSeparator4.Size = New System.Drawing.Size(186, 6)
         '
         'tmrTick
         '
@@ -85,11 +98,17 @@ Partial Class frmMain
         '
         'SysconfigureToolStripMenuItem
         '
-        Me.SysconfigureToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CursorshowToolStripMenuItem, Me.LeftclickcompatToolStripMenuItem, Me.XmbclickToolStripMenuItem, Me.WheelScrollActivateToolStripMenuItem, ToolStripSeparator3, Me.GuiVfxBendToolStripMenuItem})
+        Me.SysconfigureToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AutoBootToolStripMenuItem, ToolStripSeparator4, Me.CursorshowToolStripMenuItem, Me.LeftclickcompatToolStripMenuItem, Me.XmbclickToolStripMenuItem, Me.WheelScrollActivateToolStripMenuItem, ToolStripSeparator3, Me.GuiVfxBendToolStripMenuItem})
         Me.SysconfigureToolStripMenuItem.Image = Global.HackModMouse.My.Resources.Resources.mud
         Me.SysconfigureToolStripMenuItem.Name = "SysconfigureToolStripMenuItem"
         Me.SysconfigureToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SysconfigureToolStripMenuItem.Text = "sys.configure"
+        '
+        'AutoBootToolStripMenuItem
+        '
+        Me.AutoBootToolStripMenuItem.Name = "AutoBootToolStripMenuItem"
+        Me.AutoBootToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.AutoBootToolStripMenuItem.Text = "sys.boot{autoboot}"
         '
         'CursorshowToolStripMenuItem
         '
@@ -114,11 +133,6 @@ Partial Class frmMain
         Me.WheelScrollActivateToolStripMenuItem.Name = "WheelScrollActivateToolStripMenuItem"
         Me.WheelScrollActivateToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.WheelScrollActivateToolStripMenuItem.Text = "wheel.scroll{activate}"
-        '
-        'ToolStripSeparator3
-        '
-        ToolStripSeparator3.Name = "ToolStripSeparator3"
-        ToolStripSeparator3.Size = New System.Drawing.Size(186, 6)
         '
         'GuiVfxBendToolStripMenuItem
         '
@@ -169,4 +183,5 @@ Partial Class frmMain
     Friend WithEvents WheelScrollActivateToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents LeftclickcompatToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents GuiVfxBendToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents AutoBootToolStripMenuItem As ToolStripMenuItem
 End Class

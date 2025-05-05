@@ -20,6 +20,8 @@ Public Class frmMain
         ' these are off by default to have less false positives on viruscanners
         ' note: if the mouse is hooked debugging lags the mouse a few seconds when hackmod enters break mode
 
+        If My.Settings.AutoBoot AndAlso mudproc Is Nothing AndAlso Not (My.Computer.Keyboard.ShiftKeyDown OrElse My.Computer.Keyboard.CtrlKeyDown) Then SysbootToolStripMenuItem.PerformClick()
+
     End Sub
     Private Sub frmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         MainScreenScaling = MainScreenScalingPercent()
@@ -179,22 +181,27 @@ Public Class frmMain
         SetCursorVisibility(My.Settings.showcursor)
     End Sub
     Private Sub SysconfigureToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles SysconfigureToolStripMenuItem.DropDownOpening
+
+        AutoBootToolStripMenuItem.Checked = My.Settings.AutoBoot
+        '-
         CursorshowToolStripMenuItem.Checked = My.Settings.showcursor
         LeftclickcompatToolStripMenuItem.Checked = My.Settings.lcCompat
         XmbclickToolStripMenuItem.Checked = My.Settings.xmbclick
         WheelScrollActivateToolStripMenuItem.Checked = My.Settings.scrollActivate
-
+        '-
         GuiVfxBendToolStripMenuItem.Enabled = mudproc IsNot Nothing
 
         'scaling fix
         SetWindowPos(Me.Handle, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
     End Sub
 
-    Private Sub SysconfigureItemToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CursorshowToolStripMenuItem.Click, LeftclickcompatToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click, WheelScrollActivateToolStripMenuItem.Click
+    Private Sub SysconfigureItemToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles AutoBootToolStripMenuItem.Click, CursorshowToolStripMenuItem.Click, LeftclickcompatToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click, WheelScrollActivateToolStripMenuItem.Click
         'toggle checkmark
         sender.Checked = Not sender.Checked
         'set settings and handle doing the stuff
         Select Case sender.Name
+            Case AutoBootToolStripMenuItem.Name
+                My.Settings.AutoBoot = sender.Checked
             Case CursorshowToolStripMenuItem.Name
                 My.Settings.showcursor = sender.Checked
                 SetCursorVisibility(sender.Checked)
@@ -257,6 +264,7 @@ Public Class frmMain
 #Region "WndProc"
     Protected Overrides Sub WndProc(ByRef m As Message)
         MyBase.WndProc(m)
+        'Debug.Print($"wndproc {m}")
         If m.Msg = WM_DISPLAYCHANGE Then
             Dim newScaling = MainScreenScalingPercent()
             If MainScreenScaling <> newScaling Then
