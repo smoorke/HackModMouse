@@ -108,7 +108,7 @@ Partial Class frmMain
         '
         Me.AutoBootToolStripMenuItem.Name = "AutoBootToolStripMenuItem"
         Me.AutoBootToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
-        Me.AutoBootToolStripMenuItem.Text = "sys.boot{autoboot}"
+        Me.AutoBootToolStripMenuItem.Text = "sys.startup{autoboot}"
         '
         'CursorshowToolStripMenuItem
         '
