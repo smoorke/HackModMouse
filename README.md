@@ -11,15 +11,19 @@
 - `sys.boot` <sub>launches hackmud</sub>
 
 - `sys.configure`
+  
+     ---
+
+  - `sys.startup{autoboot}` <sub><sup>launch hackmud when starting hackmod</sub>
  
-  - `cursor.manage{show}` <sub>toggle on or off showing cursor</sub>
+  - `cursor.manage{show}` <sub><sup>toggle on or off showing cursor</sub>
 
-  - `left.click{compat}` <sub>vnc compatibility mode to prevent dragbox</sub>
+  - `left.click{compat}` <sub><sup>vnc compatibility mode to prevent dragbox</sub>
 
-  - `xmbutton.click{left}` <sub>pressing extramousebutton 1 or 2 instead sends a left click to hackmud</sub><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<sub>these buttons are also known as back/forward</sub>
+  - `xmbutton.click{left}` <sub><sup>pressing extramousebutton 1 or 2 instead sends a left click to hackmud</sub><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<sub><sup>these buttons are also known as back/forward</sub>
 
-   - `wheel.scroll{activate}` <sub>scrolling hackmud with it inactive activates and brings it to front</sub>
+   - `wheel.scroll{activate}` <sub><sup>scrolling hackmud with it inactive activates and brings it to front</sub>
 
-   - `>>gui.vfx{bend:0}` <sub>sends command to hackmud so cursor lines up better</sub>
-
-- `hackmod.shutdown` <sub>closes hackmod</sub>
+   - `>>gui.vfx{bend:0}` <sub><sup>sends command to hackmud so cursor lines up better</sub>
+  ---
+- `hackmod.shutdown` <sub><sup>closes hackmod</sub>
