@@ -1,5 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports System.Drawing.Text
+Imports System.Runtime.InteropServices
 
 Public Class frmMain
     Private mH As MouseHook = New MouseHook
@@ -120,38 +121,21 @@ Public Class frmMain
 #End Region
 
 #Region "setFont"
-    Private appdataHMod As String = IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "hackmod\")
     Private pfc As New PrivateFontCollection
 
     Private Sub setFont()
         Try
+            Dim data As IntPtr = Marshal.AllocCoTaskMem(My.Resources.whitrabt.Length)
+            Marshal.Copy(My.Resources.whitrabt, 0, data, My.Resources.whitrabt.Length)
+            AddFontMemResourceEx(data, My.Resources.whitrabt.Length, FR_PRIVATE, Nothing)
+            pfc.AddMemoryFont(data, My.Resources.whitrabt.Length)
+            Marshal.FreeCoTaskMem(data)
 
-            Dim fontpath = IO.Path.Combine(appdataHMod, "whitrabt.ttf")
-
-            If Not IO.Directory.Exists(appdataHMod) OrElse Not IO.File.Exists(fontpath) Then
-                'create directory. this can fail silently, we don't care.
-                IO.Directory.CreateDirectory(appdataHMod)
-                'write font to disk
-                FileIO.FileSystem.WriteAllBytes(fontpath, My.Resources.whitrabt, False)
-                'write font licence to font dir
-                FileIO.FileSystem.WriteAllText(IO.Path.Combine(appdataHMod, "whitrabt_license.txt"), My.Resources.whitrabt_license, False)
-            End If
-
-            pfc.AddFontFile(fontpath)
-            Dim fnt As Font = New Font(pfc.Families(0), 9)
-
-            'Set each menuitem to use font
-            setFontRecurse(cmsTray.Items, fnt)
+            cmsTray.Font = New Font(pfc.Families(0), 9)
 
         Catch ex As Exception
             Debug.Print($"bab0 setting font {ex.Message}")
         End Try
-    End Sub
-    Private Sub setFontRecurse(collection As ToolStripItemCollection, fnt As Font)
-        For Each item As ToolStripMenuItem In collection.OfType(Of ToolStripMenuItem) ' skip separators
-            item.Font = fnt
-            If item.HasDropDown Then setFontRecurse(item.DropDownItems, fnt)
-        Next
     End Sub
 #End Region
 
@@ -195,7 +179,8 @@ Public Class frmMain
         SetWindowPos(Me.Handle, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
     End Sub
 
-    Private Sub SysconfigureItemToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles AutoBootToolStripMenuItem.Click, CursorshowToolStripMenuItem.Click, LeftclickcompatToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click, WheelScrollActivateToolStripMenuItem.Click
+    Private Sub SysconfigureItemToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles AutoBootToolStripMenuItem.Click, CursorshowToolStripMenuItem.Click,
+                                                            LeftclickcompatToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click, WheelScrollActivateToolStripMenuItem.Click
         'toggle checkmark
         sender.Checked = Not sender.Checked
         'set settings and handle doing the stuff
@@ -243,8 +228,8 @@ Public Class frmMain
     Private Sub setGuiVfxBendToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles GuiVfxBendToolStripMenuItem.Click
 
         'send esc
-        SendMessage(hackMudHandle, WM_KEYDOWN, Keys.Escape, 1) ' esc down
-        SendMessage(hackMudHandle, WM_KEYUP, Keys.Escape, 1 << 31)   ' esc up
+        SendMessage(hackMudHandle, WM_KEYDOWN, Keys.Escape, 1)     ' esc down
+        SendMessage(hackMudHandle, WM_KEYUP, Keys.Escape, 1 << 31) ' esc up
 
         SendMessage(hackMudHandle, WM_ACTIVATE, WA_ACTIVE, 0) ' needed for esc to take
 

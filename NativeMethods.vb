@@ -40,6 +40,12 @@ Module NativeMethods
     Public Const GWL_HWNDPARENT As Integer = -8
 
 
+    <DllImport("gdi32.dll", SetLastError:=True)>
+    Public Function AddFontMemResourceEx(ByVal pbFont As IntPtr, ByVal cbFont As UInteger, ByVal pdv As IntPtr, ByRef pcFonts As UInteger) As IntPtr
+    End Function
+
+    Public Const FR_PRIVATE As Integer = &H10
+
     Public Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal hwnd As IntPtr, ByVal dwAttribute As Integer, ByRef pvAttribute As RECT, ByVal cbAttribute As Integer) As Integer
     Public Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
 
