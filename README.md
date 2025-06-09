@@ -8,7 +8,7 @@
 <br>
 
 
-- `sys.boot` <sub>launches hackmud</sub>
+- `sys.boot` <sub><sup>launches hackmud</sub>
 
 - `sys.configure`
   
