@@ -131,7 +131,7 @@ Public Class frmMain
             pfc.AddMemoryFont(data, My.Resources.whitrabt.Length)
             Marshal.FreeCoTaskMem(data)
 
-            cmsTray.Font = New Font(pfc.Families(0), 9)
+            cmsTray.Font = New Font(pfc.Families(0), 7.25)
 
         Catch ex As Exception
             Debug.Print($"bab0 setting font {ex.Message}")
