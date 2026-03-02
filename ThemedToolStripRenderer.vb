@@ -165,7 +165,6 @@ Public Class ThemedToolStripColorTable : Inherits ProfessionalColorTable
         End Get
     End Property
 
-
     Public Overrides ReadOnly Property ToolStripDropDownBackground As Color
         Get
             Return Color.Black

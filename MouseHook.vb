@@ -77,24 +77,26 @@ Public Class MouseHook : Implements IDisposable
 
                 Case WM_MOUSEWHEEL
                     If My.Settings.scrollActivate AndAlso
-                      GetForegroundWindow() <> hackMudHandle AndAlso
-                      WindowFromPoint(mhs.pt) = hackMudHandle Then
+                      GetForegroundWindow() <> hackMudHandle Then
+                        Dim wfp = WindowFromPoint(mhs.pt)
+                        Debug.Print($"wfp {wfp} {hackMudHandle}")
+                        If wfp <> IntPtr.Zero AndAlso wfp = hackMudHandle Then
 
-                        'needs Task.Run or there is lag
-                        injecting = True
-                        Task.Run(Sub()
-                                     ActivateAndWheel(1).mi.mouseData = ((mhs.mousedata And &HFFFF0000) >> 16) / 120
-                                     SendInput(ActivateAndWheel.Length, ActivateAndWheel, InputSize)
-                                 End Sub).ContinueWith(Sub() injecting = False)
+                            'needs Task.Run or there is lag
+                            injecting = True
+                            Task.Run(Sub()
+                                         ActivateAndWheel(1).mi.mouseData = ((mhs.mousedata And &HFFFF0000) >> 16) / 120
+                                         SendInput(ActivateAndWheel.Length, ActivateAndWheel, InputSize)
+                                     End Sub).ContinueWith(Sub() injecting = False)
 
 #If DEBUG Then
-                        'Todo: find a way to scroll w/o activating if possible
-                        Dim delta As Integer = (mhs.mousedata And &HFFFF0000) >> 16
-                        Debug.Print($"inactive scroll {delta}")
+                            'Todo: find a way to scroll w/o activating if possible
+                            Dim delta As Integer = (mhs.mousedata And &HFFFF0000) >> 16
+                            Debug.Print($"inactive scroll {delta}")
 #End If
 
+                        End If
                     End If
-
             End Select
 
         End If
