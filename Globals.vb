@@ -2,6 +2,7 @@
 
     Public mudproc As Process = Process.GetProcessesByName("hackmud_win").FirstOrDefault
     Public hackMudHandle As IntPtr = If(mudproc?.MainWindowHandle, IntPtr.Zero)
+    Public ReadOnly mePid As Integer = Process.GetCurrentProcess.Id
     Public ReadOnly Property cmsTray As ContextMenuStrip
         Get
             Return frmMain.cmsTray
@@ -12,7 +13,10 @@
     Public Sub Closer(menu As ContextMenuStrip)
         'this gets called in mousehook to close menu when clicking on hackmud
         If menu.Visible AndAlso Not menu.Bounds.Contains(Cursor.Position) AndAlso Not hasMouseRecurse(menu.Items) Then
+            frmMain.LastClickedItem = Nothing
             menu.Close()
+            If Not (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat) Then frmMain.mH.UnhookMouse()
+            frmMain.SetCursorVisibility(My.Settings.showcursor)
         End If
     End Sub
     Private Function hasMouseRecurse(collection As ToolStripItemCollection) As Boolean

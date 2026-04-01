@@ -35,6 +35,8 @@ Module NativeMethods
     Public Const WM_XBUTTONDOWN = &H20B
     Public Const WM_XBUTTONUP = &H20C
 
+    Public Const WM_DPICHANGED As Integer = &H2E0
+
     Public Const SC_RESTORE As Integer = &HF120
 
     Public Const GWL_HWNDPARENT As Integer = -8
@@ -153,6 +155,8 @@ Module NativeMethods
     Public Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As IntPtr : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function PostMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As Boolean : End Function
+    <DllImport("user32.dll")>
+    Public Function ReleaseCapture() As Boolean : End Function
 
     <DllImport("user32.dll")>
     Public Function WindowFromPoint(pt As Point) As IntPtr : End Function

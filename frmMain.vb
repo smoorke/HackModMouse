@@ -3,13 +3,14 @@ Imports System.Drawing.Text
 Imports System.Runtime.InteropServices
 
 Public Class frmMain
-    Private mH As MouseHook = New MouseHook
+    Public mH As MouseHook = New MouseHook
     Private MeTiD As UInteger = GetWindowThreadProcessId(Me.Handle, Nothing)
 
 #Region "StartupSequence"
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         SetMenuTheme(Color.FromArgb(&HFF7AB2F4))
+        AddHandler SysconfigureToolStripMenuItem.DropDown.Closing, AddressOf cmsTray_Closing
 
         setFont()
 
@@ -25,7 +26,7 @@ Public Class frmMain
 
     End Sub
     Private Sub frmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-        MainScreenScaling = MainScreenScalingPercent()
+        MainScreenScaling = MainScreenScalingPercent() 'obsolete. we are dpiaware now and this doesn't work anymore. 
     End Sub
     Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
         Get
@@ -61,7 +62,7 @@ Public Class frmMain
     End Sub
 
     Private ShowValue As Integer
-    Private Sub SetCursorVisibility(visible As Boolean)
+    Public Sub SetCursorVisibility(visible As Boolean)
 
         ' ensure the cursor is visible if the handle is not valid
         If hackMudHandle = IntPtr.Zero Then visible = True
@@ -87,7 +88,7 @@ Public Class frmMain
                 ShowValue = ShowCursor(False)
                 Debug.Print($"ensuring cursor invisibility: {ShowValue}")
             Loop
-            Do While ShowValue < -2
+            Do While ShowValue < -1
                 ShowValue = ShowCursor(True)
                 Debug.Print($"ensuring exact value: {ShowValue}")
             Loop
@@ -121,17 +122,21 @@ Public Class frmMain
 #End Region
 
 #Region "setFont"
-    Private pfc As New PrivateFontCollection
+    Private pfc As PrivateFontCollection
 
     Private Sub setFont()
         Try
-            Dim data As IntPtr = Marshal.AllocCoTaskMem(My.Resources.whitrabt.Length)
-            Marshal.Copy(My.Resources.whitrabt, 0, data, My.Resources.whitrabt.Length)
-            AddFontMemResourceEx(data, My.Resources.whitrabt.Length, FR_PRIVATE, Nothing)
-            pfc.AddMemoryFont(data, My.Resources.whitrabt.Length)
-            Marshal.FreeCoTaskMem(data)
+            If pfc Is Nothing Then
+                pfc = New PrivateFontCollection
+                Dim data As IntPtr = Marshal.AllocCoTaskMem(My.Resources.whitrabt.Length)
+                Marshal.Copy(My.Resources.whitrabt, 0, data, My.Resources.whitrabt.Length)
+                AddFontMemResourceEx(data, My.Resources.whitrabt.Length, FR_PRIVATE, Nothing)
+                pfc.AddMemoryFont(data, My.Resources.whitrabt.Length)
+                Marshal.FreeCoTaskMem(data)
+            End If
 
-            cmsTray.Font = New Font(pfc.Families(0), 7.25)
+            'todo: set fontsize according to mainscreen scaling
+            cmsTray.Font = New Font(pfc.Families(0), 12, GraphicsUnit.Pixel)
 
         Catch ex As Exception
             Debug.Print($"bab0 setting font {ex.Message}")
@@ -147,6 +152,9 @@ Public Class frmMain
 
     Private Sub cmsTray_Opening(sender As ContextMenuStrip, e As CancelEventArgs) Handles cmsTray.Opening
 
+        'this is needed to make DPI change message fire
+        SetWindowPos(Me.Handle, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
+
         SysbootToolStripMenuItem.Enabled = mudproc Is Nothing
         SetCursorVisibility(True)
 
@@ -158,6 +166,19 @@ Public Class frmMain
         If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
 
         If mH.HookHandle = IntPtr.Zero Then mH.HookMouse() ' additional logic in mousehook to close menu when appropriate
+    End Sub
+
+    Public LastClickedItem As ToolStripItem
+    Private Sub CmsTray_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles cmsTray.ItemClicked, SysconfigureToolStripMenuItem.DropDownItemClicked
+        LastClickedItem = e.ClickedItem
+    End Sub
+
+    Private Sub cmsTray_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles cmsTray.Closing
+        If TypeOf LastClickedItem Is ToolStripSeparator OrElse SysconfigureToolStripMenuItem.DropDownItems.Contains(LastClickedItem) Then
+            e.Cancel = True
+            Debug.Print($"Prevented closing due to {If(TypeOf LastClickedItem Is ToolStripSeparator, "seperator", "configItem")} click")
+            LastClickedItem = Nothing
+        End If
     End Sub
 
     Private Sub cmsTray_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsTray.Closed
@@ -189,7 +210,6 @@ Public Class frmMain
                 My.Settings.AutoBoot = sender.Checked
             Case CursorshowToolStripMenuItem.Name
                 My.Settings.showcursor = sender.Checked
-                SetCursorVisibility(sender.Checked)
             Case LeftclickcompatToolStripMenuItem.Name
                 My.Settings.lcCompat = sender.Checked
             Case XmbclickToolStripMenuItem.Name
@@ -203,7 +223,8 @@ Public Class frmMain
         My.Settings.Save()
 
         'counter-intuitively the click event fires after the closed event
-        If Not (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat) Then mH.UnhookMouse()
+
+        Debug.Print("SysconfigureItem_Click")
     End Sub
 
     Private Sub SysbootToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles SysbootToolStripMenuItem.Click
@@ -227,6 +248,8 @@ Public Class frmMain
 
     Private Sub setGuiVfxBendToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles GuiVfxBendToolStripMenuItem.Click
 
+        'todo: find a clean way to select shell input
+
         'send esc
         SendMessage(hackMudHandle, WM_KEYDOWN, Keys.Escape, 1)     ' esc down
         SendMessage(hackMudHandle, WM_KEYUP, Keys.Escape, 1 << 31) ' esc up
@@ -247,20 +270,29 @@ Public Class frmMain
 #End Region
 
 #Region "WndProc"
+    Dim DisplayChangeBusy As Boolean = False
     Protected Overrides Sub WndProc(ByRef m As Message)
         MyBase.WndProc(m)
         'Debug.Print($"wndproc {m}")
         If m.Msg = WM_DISPLAYCHANGE Then
-            Dim newScaling = MainScreenScalingPercent()
-            If MainScreenScaling <> newScaling Then
-                Debug.Print("Display scaling changed")
+            'Dim newScaling = MainScreenScalingPercent() 'obsolete: this doesn't work anymore due to now being dpi aware
+            'If MainScreenScaling <> newScaling Then
+            Debug.Print("WM_DISPLAYCHANGE")
+            If Not DisplayChangeBusy Then
+                DisplayChangeBusy = True
                 Task.Run(Sub() 'nudge blurry trayicon so it is sharp again
                              Threading.Thread.Sleep(4000)
                              trayIcon.Visible = False
                              trayIcon.Visible = True
+                             DisplayChangeBusy = False
                          End Sub)
-                MainScreenScaling = newScaling
             End If
+            'MainScreenScaling = newScaling
+            'End If
+        End If
+        If m.Msg = WM_DPICHANGED Then 'note this fires too late: on opening config submenu.
+            setFont()
+            Debug.Print("Dpi Changed") 'note: seems either w11 fixed the blurry icon on main screen DPI change or becoming DPI aware did it, need further testing
         End If
     End Sub
 #End Region
@@ -269,7 +301,7 @@ Public Class frmMain
 
     Private MainScreenScaling As Integer = 0
 
-    Public Function MainScreenScalingPercent() As Integer
+    Public Function MainScreenScalingPercent() As Integer 'Obsolete: broken due to DPI Aware
         Dim scrn = Screen.PrimaryScreen
         Dim grab As New InactiveForm With {
             .FormBorderStyle = FormBorderStyle.None,
