@@ -70,10 +70,10 @@ Public Class MouseHook : Implements IDisposable
 
                     ' rarely other applications do not close their traymenu when using xmb on their respective window
                     ' i'm opting to follow the majority here and close it, the same applies for MBUTTONDOWN
-                    cmsTray.Closer() ' close menu when clicking hackmud
+                    cmsTray.Closer() ' close menu when clicking outside of menu
 
                 Case WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN
-                    cmsTray.Closer() ' close menu when clicking hackmud
+                    cmsTray.Closer() ' close menu when clicking outside of menu
 
                 Case WM_MOUSEWHEEL
                     If My.Settings.scrollActivate AndAlso
