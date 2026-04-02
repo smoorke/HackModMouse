@@ -3,7 +3,7 @@ Imports System.Drawing.Text
 Imports System.Runtime.InteropServices
 
 Public Class frmMain
-    Public mH As MouseHook = New MouseHook
+
     Private MeTiD As UInteger = GetWindowThreadProcessId(Me.Handle, Nothing)
 
 #Region "StartupSequence"
