@@ -53,7 +53,8 @@ Module NativeMethods
 
     <System.Runtime.InteropServices.DllImport("user32.dll")>
     Public Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Boolean : End Function
-
+    <DllImport("user32.dll")>
+    Public Function ClientToScreen(hWnd As IntPtr, ByRef lpPoint As Point) As Boolean : End Function
     <System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)>
     Public Structure RECT
         Public left, top, right, bottom As Integer
@@ -329,7 +330,8 @@ Module NativeMethods
     End Enum
 
 #Region "SendInput"
-    Public Declare Function SendInput Lib "user32.dll" (nInputs As Integer, pInputs() As INPUT, cbSize As Integer) As UInteger
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function SendInput(nInputs As UInteger, pInputs() As INPUT, cbSize As Integer) As UInteger : End Function
 
     <StructLayout(LayoutKind.Explicit)>
     Structure INPUT
