@@ -248,7 +248,15 @@ Public Class frmMain
 
     Private Sub setGuiVfxBendToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles GuiVfxBendToolStripMenuItem.Click
 
-        'todo: find a clean way to select shell input
+        'todo: find a cleaner way to select shell input
+        Dim curPos As Point = Cursor.Position
+        Dim pt As New Point(100, 100) 'need to account for invis border and gui.size which alters it's size
+        ClientToScreen(hackMudHandle, pt)
+        Cursor.Position = pt
+        SendMessage(hackMudHandle, WM_LBUTTONDOWN, 0, 0)
+        Threading.Thread.Sleep(1) ' this is needed or we get a dragbox
+        SendMessage(hackMudHandle, WM_LBUTTONUP, 0, 0)
+        Cursor.Position = curPos
 
         'send esc
         SendMessage(hackMudHandle, WM_KEYDOWN, Keys.Escape, 1)     ' esc down
