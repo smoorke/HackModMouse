@@ -63,7 +63,7 @@ Public Class MouseHook : Implements IDisposable
                         If (mhs.mousedata And &HFFFF0000) AndAlso WindowFromPoint(mhs.pt) = hackMudHandle Then
                             Debug.Print($"xmbclick {mhs.flags} {mhs.mousedata}")
                             SendMessage(hackMudHandle, WM_LBUTTONDOWN, 0, 0)
-                            Threading.Thread.Sleep(1) ' this is needed or we get a dragbox
+                            Threading.Thread.Sleep(1) ' this is needed or we might get a dragbox on slower hardware
                             SendMessage(hackMudHandle, WM_LBUTTONUP, 0, 0)
                         End If
                     End If

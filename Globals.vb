@@ -4,6 +4,7 @@
     Public hackMudHandle As IntPtr = If(mudproc?.MainWindowHandle, IntPtr.Zero)
     Public ReadOnly mePid As Integer = Process.GetCurrentProcess.Id
     Public mH As MouseHook = New MouseHook
+    Public scaling As Single = 1.0!
     Public ReadOnly Property cmsTray As ContextMenuStrip
         Get
             Return frmMain.cmsTray

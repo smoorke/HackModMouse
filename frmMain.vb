@@ -12,7 +12,7 @@ Public Class frmMain
         SetMenuTheme(Color.FromArgb(&HFF7AB2F4))
         AddHandler SysconfigureToolStripMenuItem.DropDown.Closing, AddressOf cmsTray_Closing
 
-        setFont()
+        ApplyScaling()
 
         CursorMagic()
 
@@ -20,20 +20,28 @@ Public Class frmMain
 
         If My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat Then mH.HookMouse()
         ' these are off by default to have less false positives on viruscanners
-        ' note: if the mouse is hooked debugging lags the mouse a few seconds when hackmod enters break mode
+        ' note: if the mouse is hooked debugging lags the mouse a few seconds when entering break mode
 
         If My.Settings.AutoBoot AndAlso mudproc Is Nothing AndAlso Not (My.Computer.Keyboard.ShiftKeyDown OrElse My.Computer.Keyboard.CtrlKeyDown) Then SysbootToolStripMenuItem.PerformClick()
 
     End Sub
-    Private Sub frmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-        MainScreenScaling = MainScreenScalingPercent() 'obsolete. we are dpiaware now and this doesn't work anymore. 
-    End Sub
+
     Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
         Get
             Return True
         End Get
     End Property
 
+#End Region
+
+#Region "Scaling"
+    Private Sub ApplyScaling(Optional pt As Point = Nothing)
+        Dim dpi As UInteger = 96
+        GetDpiForMonitor(MonitorFromPoint(New Point, 2), 0, dpi, dpi)
+        scaling = CSng(dpi) / 96.0!
+        setFont()
+        cmsTray.ImageScalingSize = New Size(16 * scaling, 16 * scaling)
+    End Sub
 #End Region
 
 #Region "Cursor Magic"
@@ -136,7 +144,7 @@ Public Class frmMain
             End If
 
             'todo: set fontsize according to mainscreen scaling
-            cmsTray.Font = New Font(pfc.Families(0), 12, GraphicsUnit.Pixel)
+            cmsTray.Font = New Font(pfc.Families(0), 12 * scaling, GraphicsUnit.Pixel)
 
         Catch ex As Exception
             Debug.Print($"bab0 setting font {ex.Message}")
@@ -158,10 +166,11 @@ Public Class frmMain
         SysbootToolStripMenuItem.Enabled = mudproc Is Nothing
         SetCursorVisibility(True)
 
-        ' this is for when OOP crackers send esc followed by WM_ACTIVATE, SetForegroundWindow() or AppActivate()
+        ' this is for when OOG crackers send esc followed by WM_ACTIVATE, SetForegroundWindow() or AppActivate()
         SendMessage(hackMudHandle, WM_ACTIVATE, 1, 0) 'prevents the menu from closing when the above happens
         ' Note: you need to unminimize hackmud before sending esc or it will fail
-        '   in your OOP WM_ACTIVATE is preferred as it doesn't make hackmud pop to front nor steal focus
+        '   in your OOG WM_ACTIVATE is preferred as it doesn't make hackmud pop to front nor steal focus
+        '   note: some applications still don't play nice with this so reults may vary.
 
         If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
 
@@ -254,15 +263,15 @@ Public Class frmMain
         ClientToScreen(hackMudHandle, pt)
         Cursor.Position = pt
         SendMessage(hackMudHandle, WM_LBUTTONDOWN, 0, 0)
-        Threading.Thread.Sleep(1) ' this is needed or we get a dragbox
+        Threading.Thread.Sleep(1) 'this is needed or we might get a dragbox on slower hardware
         SendMessage(hackMudHandle, WM_LBUTTONUP, 0, 0)
         Cursor.Position = curPos
 
         'send esc
-        SendMessage(hackMudHandle, WM_KEYDOWN, Keys.Escape, 1)     ' esc down
+        SendMessage(hackMudHandle, WM_KEYDOWN, Keys.Escape, 1) ' esc down
         SendMessage(hackMudHandle, WM_KEYUP, Keys.Escape, 1 << 31) ' esc up
 
-        SendMessage(hackMudHandle, WM_ACTIVATE, WA_ACTIVE, 0) ' needed for esc to take
+        SendMessage(hackMudHandle, WM_ACTIVATE, WA_ACTIVE, 0) ' needed for esc to take, note: hm should aready be active so this isn't necessary but left in just in case
 
         'send text
         Dim text = "gui.vfx{bend:0}"
@@ -281,65 +290,25 @@ Public Class frmMain
     Dim DisplayChangeBusy As Boolean = False
     Protected Overrides Sub WndProc(ByRef m As Message)
         MyBase.WndProc(m)
-        'Debug.Print($"wndproc {m}")
         If m.Msg = WM_DISPLAYCHANGE Then
-            'Dim newScaling = MainScreenScalingPercent() 'obsolete: this doesn't work anymore due to now being dpi aware
-            'If MainScreenScaling <> newScaling Then
             Debug.Print("WM_DISPLAYCHANGE")
             If Not DisplayChangeBusy Then
                 DisplayChangeBusy = True
-                Task.Run(Sub() 'nudge blurry trayicon so it is sharp again
+                Task.Run(Sub()
+                             ApplyScaling()
+
+                             'nudge blurry trayicon so it is sharp again
                              Threading.Thread.Sleep(4000)
                              trayIcon.Visible = False
                              trayIcon.Visible = True
                              DisplayChangeBusy = False
                          End Sub)
             End If
-            'MainScreenScaling = newScaling
-            'End If
-        End If
-        If m.Msg = WM_DPICHANGED Then 'note this fires too late: on opening config submenu.
-            setFont()
-            Debug.Print("Dpi Changed") 'note: seems either w11 fixed the blurry icon on main screen DPI change or becoming DPI aware did it, need further testing
         End If
     End Sub
 #End Region
 
-#Region "ScreenScaling"
 
-    Private MainScreenScaling As Integer = 0
-
-    Public Function MainScreenScalingPercent() As Integer 'Obsolete: broken due to DPI Aware
-        Dim scrn = Screen.PrimaryScreen
-        Dim grab As New InactiveForm With {
-            .FormBorderStyle = FormBorderStyle.None,
-            .TransparencyKey = Color.Red,
-            .BackColor = Color.Red,
-            .ShowInTaskbar = False,
-            .StartPosition = FormStartPosition.Manual,
-            .Location = scrn.Bounds.Location
-        }
-        AddHandler grab.Shown, Sub()
-                                   grab.Location += New Point(1, 1) 'need to update the location so the frame changes
-                                   Dim rcFrame As RECT
-                                   DwmGetWindowAttribute(grab.Handle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
-                                   Dim rcWind As RECT
-                                   GetWindowRect(grab.Handle, rcWind)
-                                   grab.Tag = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
-                                   grab.Close()
-                               End Sub
-        grab.ShowDialog()
-        Return grab.Tag
-    End Function
-
-    Private Class InactiveForm : Inherits Form
-        Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
-            Get
-                Return True
-            End Get
-        End Property
-    End Class
-#End Region
 
 #If DEBUG Then
 

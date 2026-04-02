@@ -41,6 +41,11 @@ Module NativeMethods
 
     Public Const GWL_HWNDPARENT As Integer = -8
 
+    <DllImport("user32.dll")>
+    Public Function MonitorFromPoint(ByVal pt As Point, ByVal dwFlags As UInteger) As IntPtr : End Function
+
+    <DllImport("shcore.dll")>
+    Public Function GetDpiForMonitor(ByVal hmonitor As IntPtr, ByVal dpiType As Integer, ByRef dpiX As UInteger, ByRef dpiY As UInteger) As Integer : End Function
 
     <DllImport("gdi32.dll", SetLastError:=True)>
     Public Function AddFontMemResourceEx(ByVal pbFont As IntPtr, ByVal cbFont As UInteger, ByVal pdv As IntPtr, ByRef pcFonts As UInteger) As IntPtr

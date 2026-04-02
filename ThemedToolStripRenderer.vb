@@ -31,8 +31,8 @@
         ' TODO: proper colormapper instead of hardcoding just the 1 instance
 
         ' Draw each characters individually with color map
-        Dim charHeight As Integer = 12 ' Approximate character height
-        Dim charWidth As Integer = 9 ' Approximate character width
+        Dim charHeight As Integer = 12 * scaling ' Approximate character height
+        Dim charWidth As Integer = 12 * scaling  ' Approximate character width
         Dim xPos As Integer = textRectangle.Left
         Dim yPos As Integer = (textRectangle.Top + textRectangle.Height) / 2 - charHeight / 2
         Dim colorIndex As Integer = -1
@@ -60,7 +60,7 @@
             TextRenderer.DrawText(graphics, $"{currentChar}", If(isBrace, italicFont, textFont), New Rectangle(xPos - If(isBrace, braces.IndexOf(currentChar), 0), yPos, charWidth, charHeight), drawColor, textFormat)
 
             ' Update xPos for the next character
-            xPos += 7
+            xPos += 7 * scaling
         Next
     End Sub
 
@@ -69,12 +69,12 @@
         ' Calculate arrow
         Dim midY As Integer = arrowBounds.Top + arrowBounds.Height \ 2
         Dim arrowHeight As Integer = arrowBounds.Height \ 3
-        Dim arrowWidth As Integer = arrowBounds.Width \ 3
+        'Dim arrowWidth As Integer = arrowBounds.Width \ 3
         ' Draw an arrow with the specified color
         e.Graphics.FillPolygon(New SolidBrush(Me.col), New Point() {
-             New Point(arrowBounds.Right - arrowWidth, midY - arrowHeight \ 2),
+             New Point(arrowBounds.Right - arrowHeight \ 2, midY - arrowHeight \ 2),
              New Point(arrowBounds.Right, midY),
-             New Point(arrowBounds.Right - arrowWidth, midY + arrowHeight \ 2)
+             New Point(arrowBounds.Right - arrowHeight \ 2, midY + arrowHeight \ 2)
         })
     End Sub
 
