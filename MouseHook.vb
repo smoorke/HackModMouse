@@ -109,6 +109,7 @@ Public Class MouseHook : Implements IDisposable
     Private modhandle = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName)
     Public Sub HookMouse()
         HookHandle = SetWindowsHookEx(WH_MOUSE_LL, mhCallBack, modhandle, 0)
+        Debug.Print($"MouseHooked {HookHandle}")
         If HookHandle = IntPtr.Zero Then Throw New System.Exception($"Mouse hook bab0 {Marshal.GetLastWin32Error}")
     End Sub
 
