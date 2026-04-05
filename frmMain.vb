@@ -213,7 +213,7 @@ Public Class frmMain
                                                             LeftclickcompatToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click, WheelScrollActivateToolStripMenuItem.Click
         'toggle checkmark
         sender.Checked = Not sender.Checked
-        'set settings and handle doing the stuff
+        'set settings 
         Select Case sender.Name
             Case AutoBootToolStripMenuItem.Name
                 My.Settings.AutoBoot = sender.Checked
@@ -221,19 +221,22 @@ Public Class frmMain
                 My.Settings.showcursor = sender.Checked
             Case LeftclickcompatToolStripMenuItem.Name
                 My.Settings.lcCompat = sender.Checked
+                'If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then mH.HookMouse()
             Case XmbclickToolStripMenuItem.Name
                 My.Settings.xmbclick = sender.Checked
-                If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then mH.HookMouse()
+                'If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then mH.HookMouse()
             Case WheelScrollActivateToolStripMenuItem.Name
                 My.Settings.scrollActivate = sender.Checked
-                If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then mH.HookMouse()
+                'If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then mH.HookMouse()
         End Select
+
+        'hook mouse if applicable 
+        If mH.HookHandle = IntPtr.Zero AndAlso (My.Settings.lcCompat OrElse My.Settings.xmbclick OrElse My.Settings.scrollActivate) Then mH.HookMouse()
+        'counter-intuitively the click event fires after the closed event
+        Debug.Print("SysconfigureItem_Click")
 
         My.Settings.Save()
 
-        'counter-intuitively the click event fires after the closed event
-
-        Debug.Print("SysconfigureItem_Click")
     End Sub
 
     Private Sub SysbootToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles SysbootToolStripMenuItem.Click
