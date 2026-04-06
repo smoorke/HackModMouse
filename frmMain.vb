@@ -10,7 +10,9 @@ Public Class frmMain
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         SetMenuTheme(Color.FromArgb(&HFF7AB2F4))
+        AddHandler SysconfigureToolStripMenuItem.DropDown.MouseLeave, AddressOf cmsTray_MouseLeave
         AddHandler SysconfigureToolStripMenuItem.DropDown.Closing, AddressOf cmsTray_Closing
+        SysconfigureToolStripMenuItem.DropDown.ShowItemToolTips = False
 
         ApplyScaling()
 
@@ -193,6 +195,10 @@ Public Class frmMain
     Private Sub cmsTray_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsTray.Closed
         Debug.Print($"systray closed {e.CloseReason}")
         SetCursorVisibility(My.Settings.showcursor)
+        MenuTooltip.Hide()
+    End Sub
+    Private Sub cmsTray_MouseLeave(sender As Object, e As EventArgs) Handles cmsTray.MouseLeave ',sysconfig.dropdown.mouseleave
+        MenuTooltip.Hide()
     End Sub
     Private Sub SysconfigureToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles SysconfigureToolStripMenuItem.DropDownOpening
 
@@ -205,8 +211,8 @@ Public Class frmMain
         '-
         GuiVfxBendToolStripMenuItem.Enabled = mudproc IsNot Nothing
 
-        'scaling fix
-        SetWindowPos(Me.Handle, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
+        'scaling fix 'is this still needed now that we are dpi aware?
+        'SetWindowPos(Me.Handle, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
     End Sub
 
     Private Sub SysconfigureItemToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles AutoBootToolStripMenuItem.Click, CursorshowToolStripMenuItem.Click,
@@ -300,7 +306,7 @@ Public Class frmMain
                 Task.Run(Sub()
                              ApplyScaling()
 
-                             'nudge blurry trayicon so it is sharp again
+                             'nudge blurry trayicon so it is sharp again, no longer needed in W11?
                              Threading.Thread.Sleep(4000)
                              trayIcon.Visible = False
                              trayIcon.Visible = True

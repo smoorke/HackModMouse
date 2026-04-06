@@ -5,9 +5,15 @@
     Public ReadOnly mePid As Integer = Process.GetCurrentProcess.Id
     Public mH As MouseHook = New MouseHook
     Public scaling As Single = 1.0!
+    Public MenuTooltip As New CustomToolTip
     Public ReadOnly Property cmsTray As ContextMenuStrip
         Get
             Return frmMain.cmsTray
+        End Get
+    End Property
+    Public ReadOnly Property ConfigDropDown As ToolStripDropDown
+        Get
+            Return frmMain.SysconfigureToolStripMenuItem.DropDown
         End Get
     End Property
 
@@ -20,6 +26,7 @@
             If Not (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat) Then mH.UnhookMouse()
             frmMain.SetCursorVisibility(My.Settings.showcursor)
         End If
+        MenuTooltip.Hide()
     End Sub
     Private Function hasMouseRecurse(collection As ToolStripItemCollection) As Boolean
         For Each menuitem As ToolStripMenuItem In collection.OfType(Of ToolStripMenuItem). 'skip separators

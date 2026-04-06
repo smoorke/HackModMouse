@@ -76,7 +76,6 @@ Partial Class frmMain
         '
         'trayIcon
         '
-        Me.trayIcon.ContextMenuStrip = Me.cmsTray
         Me.trayIcon.Icon = CType(resources.GetObject("trayIcon.Icon"), System.Drawing.Icon)
         Me.trayIcon.Text = "hackmod"
         Me.trayIcon.Visible = True
@@ -85,16 +84,20 @@ Partial Class frmMain
         '
         Me.cmsTray.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SysbootToolStripMenuItem, ToolStripSeparator1, Me.SysconfigureToolStripMenuItem, ToolStripSeparator2, Me.ExitToolStripMenuItem})
         Me.cmsTray.Name = "cmsTray"
+        Me.cmsTray.ShowItemToolTips = False
         Me.cmsTray.Size = New System.Drawing.Size(181, 82)
         Me.cmsTray.Tag = ""
         '
         'SysbootToolStripMenuItem
         '
+        Me.SysbootToolStripMenuItem.AutoToolTip = True
+        Me.SysbootToolStripMenuItem.Enabled = False
         Me.SysbootToolStripMenuItem.Image = Global.HackModMouse.My.Resources.Resources.HackMod
         Me.SysbootToolStripMenuItem.Name = "SysbootToolStripMenuItem"
         Me.SysbootToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SysbootToolStripMenuItem.Tag = ""
         Me.SysbootToolStripMenuItem.Text = "sys.boot"
+        Me.SysbootToolStripMenuItem.ToolTipText = "launch HackMud" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "steam://rungameid/469920"
         '
         'SysconfigureToolStripMenuItem
         '
@@ -109,30 +112,35 @@ Partial Class frmMain
         Me.AutoBootToolStripMenuItem.Name = "AutoBootToolStripMenuItem"
         Me.AutoBootToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.AutoBootToolStripMenuItem.Text = "sys.startup{autoboot}"
+        Me.AutoBootToolStripMenuItem.ToolTipText = "launch HackMud when starting hackmod"
         '
         'CursorshowToolStripMenuItem
         '
         Me.CursorshowToolStripMenuItem.Name = "CursorshowToolStripMenuItem"
         Me.CursorshowToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.CursorshowToolStripMenuItem.Text = "cursor.manage{show}"
+        Me.CursorshowToolStripMenuItem.ToolTipText = "toggle showing cursor"
         '
         'LeftclickcompatToolStripMenuItem
         '
         Me.LeftclickcompatToolStripMenuItem.Name = "LeftclickcompatToolStripMenuItem"
         Me.LeftclickcompatToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.LeftclickcompatToolStripMenuItem.Text = "left.click{compat}"
+        Me.LeftclickcompatToolStripMenuItem.ToolTipText = "vnc compatibility mode to prevent dragbox"
         '
         'XmbclickToolStripMenuItem
         '
         Me.XmbclickToolStripMenuItem.Name = "XmbclickToolStripMenuItem"
         Me.XmbclickToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.XmbclickToolStripMenuItem.Text = "xmbutton.click{left}"
+        Me.XmbclickToolStripMenuItem.ToolTipText = "xmb sends a left click to HackMud"
         '
         'WheelScrollActivateToolStripMenuItem
         '
         Me.WheelScrollActivateToolStripMenuItem.Name = "WheelScrollActivateToolStripMenuItem"
         Me.WheelScrollActivateToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.WheelScrollActivateToolStripMenuItem.Text = "wheel.scroll{activate}"
+        Me.WheelScrollActivateToolStripMenuItem.ToolTipText = "activate and bring HackMud to front on scroll"
         '
         'GuiVfxBendToolStripMenuItem
         '
@@ -141,6 +149,7 @@ Partial Class frmMain
         Me.GuiVfxBendToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.GuiVfxBendToolStripMenuItem.Tag = ""
         Me.GuiVfxBendToolStripMenuItem.Text = ">>gui.vfx{bend:0}"
+        Me.GuiVfxBendToolStripMenuItem.ToolTipText = "send gui.vfx{bend:0} to HackMud " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "to make cursor line up better"
         '
         'ExitToolStripMenuItem
         '
@@ -151,6 +160,7 @@ Partial Class frmMain
         Me.ExitToolStripMenuItem.Tag = ""
         Me.ExitToolStripMenuItem.Text = "hackmod.shutdown"
         Me.ExitToolStripMenuItem.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage
+        Me.ExitToolStripMenuItem.ToolTipText = "close hackmod"
         '
         'frmMain
         '

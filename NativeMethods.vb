@@ -41,6 +41,13 @@ Module NativeMethods
 
     Public Const GWL_HWNDPARENT As Integer = -8
 
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function SetWindowLong(hWnd As IntPtr, nIndex As Integer, dwNewLong As IntPtr) As IntPtr : End Function
+
+    Public Const ASFW_ANY As Integer = -1
+
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function AllowSetForegroundWindow(dwProcessId As Integer) As Boolean : End Function
     <DllImport("user32.dll")>
     Public Function MonitorFromPoint(ByVal pt As Point, ByVal dwFlags As UInteger) As IntPtr : End Function
 
@@ -58,11 +65,25 @@ Module NativeMethods
 
     <System.Runtime.InteropServices.DllImport("user32.dll")>
     Public Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Boolean : End Function
+    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    Public Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Boolean : End Function
     <DllImport("user32.dll")>
     Public Function ClientToScreen(hWnd As IntPtr, ByRef lpPoint As Point) As Boolean : End Function
     <System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)>
     Public Structure RECT
         Public left, top, right, bottom As Integer
+        Public Sub New(left As Integer, top As Integer, right As Integer, bottom As Integer)
+            Me.left = left
+            Me.top = top
+            Me.right = right
+            Me.bottom = bottom
+        End Sub
+        Public Sub New(ByVal rct As Rectangle)
+            Me.New(rct.Left, rct.Top, rct.Right, rct.Bottom)
+        End Sub
+        Public Overrides Function ToString() As String
+            Return $"{Me.left},{Me.top},{Me.right},{Me.bottom}"
+        End Function
     End Structure
     Enum SWP_HWND As Integer
         ''' <summary>

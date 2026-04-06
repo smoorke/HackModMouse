@@ -43,6 +43,8 @@ Public Class MouseHook : Implements IDisposable
     }
     Private ReadOnly InputSize = Marshal.SizeOf(GetType(INPUT))
     Private injecting As Boolean = False
+    Public Shared hoverItem As ToolStripMenuItem
+
     Private Function MouseProc(nCode As Integer, wParam As IntPtr, lParam As IntPtr) As Integer
 
         If nCode = HC_ACTION AndAlso (My.Settings.xmbclick OrElse My.Settings.scrollActivate OrElse My.Settings.lcCompat OrElse cmsTray.Visible) Then
@@ -54,6 +56,42 @@ Public Class MouseHook : Implements IDisposable
             If injecting Then Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
 
             Select Case wParam.ToInt32()
+                Case WM_MOUSEMOVE
+                    If cmsTray.Visible AndAlso cmsTray.Bounds.Contains(mhs.pt) Then
+                        Dim pt = cmsTray.PointToClient(mhs.pt)
+                        Dim item = cmsTray.GetItemAt(pt)
+
+                        If item IsNot Nothing AndAlso TypeOf item IsNot ToolStripSeparator Then
+
+                            If item IsNot hoverItem Then
+
+                                hoverItem = item
+
+                                MenuTooltip.ShowToolTip(item)
+
+                            End If
+
+                        Else
+                            hoverItem = Nothing
+                        End If
+                    ElseIf ConfigDropDown.Visible AndAlso ConfigDropDown.Bounds.Contains(mhs.pt) Then
+                        Dim pt = ConfigDropDown.PointToClient(mhs.pt)
+                        Dim item = ConfigDropDown.GetItemAt(pt)
+
+                        If item IsNot Nothing AndAlso TypeOf item IsNot ToolStripSeparator Then
+
+                            If item IsNot hoverItem Then
+
+                                hoverItem = item
+
+                                MenuTooltip.ShowToolTip(item)
+
+                            End If
+
+                        Else
+                            hoverItem = Nothing
+                        End If
+                    End If
 
                 Case WM_LBUTTONUP ' small delay to prevent dragbox when using vnc. may need tweaking
                     If My.Settings.lcCompat AndAlso GetForegroundWindow() = hackMudHandle Then Threading.Thread.Sleep(16)
