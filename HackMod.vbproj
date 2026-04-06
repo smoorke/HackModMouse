@@ -83,6 +83,7 @@
     <Compile Include="CustomTooltip.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="DWMThumb.vb" />
     <Compile Include="frmMain.vb">
       <SubType>Form</SubType>
     </Compile>

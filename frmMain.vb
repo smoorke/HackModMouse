@@ -185,8 +185,10 @@ Public Class frmMain
     End Sub
     Private Sub cmsTray_Opening(sender As ContextMenuStrip, e As CancelEventArgs) Handles cmsTray.Opening
 
+        sender.Opacity = 0
+
         'this is needed to make DPI change message fire
-        SetWindowPos(Me.Handle, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
+        'SetWindowPos(Me.Handle, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
 
         SysbootToolStripMenuItem.Enabled = mudproc Is Nothing
         SetCursorVisibility(True)
@@ -199,7 +201,57 @@ Public Class frmMain
 
         If IsIconic(hackMudHandle) Then SendMessage(hackMudHandle, WM_SYSCOMMAND, SC_RESTORE, 0)
 
+        If hackMudHandle = IntPtr.Zero Then SetForegroundWindow(Me.Handle) 'fixes menu appearing in taskbar when called from 2nd instance
+
         If mH.HookHandle = IntPtr.Zero Then mH.HookMouse() ' additional logic in mousehook to close menu when appropriate
+
+        'animation prep
+        If animForm.IsDisposed Then
+            animForm = New InactiveForm With {
+                .FormBorderStyle = FormBorderStyle.None,
+                .StartPosition = FormStartPosition.Manual,
+                .TopMost = False,
+                .ShowInTaskbar = False,
+                .BackColor = Color.Black,
+                .TransparencyKey = .BackColor,
+                .Opacity = 1
+            }
+        End If
+
+        If Not animForm.Visible Then
+            animForm.Show()
+        End If
+
+    End Sub
+    Private Sub cmsTray_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsTray.Opened
+        Dim hwnd As IntPtr = sender.Handle
+
+        Application.DoEvents() 'needed to have getClientRect report actual value after scaling
+
+        Dim rcM As RECT
+        GetClientRect(hwnd, rcM)
+
+        Dim loc As Point
+        Dim wa As Rectangle
+
+        Select Case sender.Tag
+            Case ToolStripDropDownDirection.AboveLeft
+                loc = Control.MousePosition - New Point(rcM.right, rcM.bottom)
+            Case Else
+                loc = Control.MousePosition
+        End Select
+        wa = Screen.FromPoint(Control.MousePosition).WorkingArea
+
+        loc = New Point(Math.Max(wa.X, loc.X), Math.Max(wa.Y, loc.Y))
+
+        If loc.Y + rcM.bottom > wa.Bottom Then loc.Y = wa.Bottom - rcM.bottom
+        If loc.X + rcM.right > wa.Right Then loc.X = wa.Right - rcM.right
+
+        SetWindowPos(hwnd, SWP_HWND.TOP, loc.X, loc.Y, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+
+        AnimateMenu(sender, sender.Tag, 80)
+
+        sender.Opacity = 1
     End Sub
 
     Public LastClickedItem As ToolStripItem
@@ -313,6 +365,127 @@ Public Class frmMain
         SendMessage(hackMudHandle, WM_CHAR, Keys.Return, 0)
 
     End Sub
+    Public Sub AnimateMenu(menu As ToolStripDropDown, direction As ToolStripDropDownDirection, animationDurationMs As Integer)
+        Dim thumb As IntPtr = IntPtr.Zero
+
+        animForm.Bounds = menu.Bounds
+
+        If animationDurationMs = 0 Then
+            menu.Opacity = 1
+            Exit Sub
+        End If
+
+
+        ' --- start stopwatch first ---
+        Dim sw As Stopwatch = Stopwatch.StartNew()
+        Dim progress As Double = 0
+
+        Dim finalRect As RECT
+        GetClientRect(menu.Handle, finalRect)
+
+        ' Register DWM thumbnail
+        Dim hwnd As IntPtr = menu.Handle
+        If DwmRegisterThumbnail(animForm.Handle, hwnd, thumb) <> 0 Then
+            Debug.Print("DwmRegisterThumbnail failed")
+            Return
+        End If
+
+        Dim finalWidth As Integer = finalRect.right - finalRect.left
+        Dim finalHeight As Integer = finalRect.bottom - finalRect.top
+        Dim aspectRatio As Double = finalWidth / finalHeight
+
+        ' Compute start rectangle
+        Dim startRect As RECT
+
+        Select Case direction
+            Case ToolStripDropDownDirection.AboveLeft
+                startRect = New RECT With {
+                    .left = finalRect.right - 32,
+                    .top = finalRect.bottom - 32 / aspectRatio,
+                    .right = finalRect.right,
+                    .bottom = finalRect.bottom
+                }
+            Case ToolStripDropDownDirection.AboveRight
+                startRect = New RECT With {
+                    .left = finalRect.left,
+                    .top = finalRect.bottom - 32 / aspectRatio,
+                    .right = finalRect.left + 32,
+                    .bottom = finalRect.bottom
+                }
+            Case Else
+                startRect = New RECT With {
+                    .left = finalRect.left,
+                    .top = finalRect.top,
+                    .right = finalRect.left + 32,
+                    .bottom = finalRect.top - 32 / aspectRatio
+                }
+        End Select
+        Debug.Print($"{direction} {finalRect} {startRect}")
+
+        ' Initial DWM thumbnail properties
+        Dim props As New DWM_THUMBNAIL_PROPERTIES With {
+            .dwFlags = DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or
+                   DwmThumbnailFlags.DWM_TNP_OPACITY Or
+                   DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or
+                   DwmThumbnailFlags.DWM_TNP_VISIBLE,
+            .rcDestination = startRect,
+            .Opacity = 0,
+            .fVisible = True,
+            .fSourceClientAreaOnly = True
+        }
+
+        ' --- animate ---
+
+        While progress < 1.0
+            progress = Math.Min(1.0, sw.Elapsed.TotalMilliseconds / animationDurationMs)
+
+            ' interpolate rectangle and opacity
+            props.rcDestination.left = CInt(startRect.left + (finalRect.left - startRect.left) * progress)
+            props.rcDestination.top = CInt(startRect.top + (finalRect.top - startRect.top) * progress)
+            props.rcDestination.right = CInt(startRect.right + (finalRect.right - startRect.right) * progress)
+            props.rcDestination.bottom = CInt(startRect.bottom + (finalRect.bottom - startRect.bottom) * progress)
+            props.opacity = CByte(Math.Min(255, 255 * progress))
+
+            DwmUpdateThumbnailProperties(thumb, props)
+            DwmFlush()
+        End While
+
+        menu.Opacity = 1
+        DwmUnregisterThumbnail(thumb)
+
+
+    End Sub
+
+    Public animForm As New InactiveForm() With {
+            .FormBorderStyle = FormBorderStyle.None,
+            .StartPosition = FormStartPosition.Manual,
+            .TopMost = True,
+            .ShowInTaskbar = False,
+            .BackColor = Color.Black,
+            .TransparencyKey = .BackColor,
+            .Opacity = 1
+        }
+
+    Public Class InactiveForm : Inherits Form
+        Protected Overrides ReadOnly Property ShowWithoutActivation As Boolean
+            Get
+                Return True
+            End Get
+        End Property
+
+        Protected Overrides ReadOnly Property CreateParams As CreateParams
+            Get
+                Dim cp As CreateParams = MyBase.CreateParams
+                ' Const CS_DROPSHADOW As Integer = &H20000
+                'cp.Style = WindowStyles.WS_POPUP Or WindowStyles.WS_VISIBLE
+                cp.ExStyle = cp.ExStyle Or WindowStylesEx.WS_EX_TOOLWINDOW
+                'cp.ClassStyle = cp.ClassStyle Or CS_DROPSHADOW
+                Return cp
+            End Get
+        End Property
+
+
+    End Class
 
 #End Region
 
