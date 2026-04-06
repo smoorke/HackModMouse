@@ -9,7 +9,7 @@ Imports System.Runtime.InteropServices
 ' Review the values of the assembly attributes
 
 <Assembly: AssemblyTitle("HackMod Mouse Enabler")>
-<Assembly: AssemblyDescription("Enable MouseCursor in hackmud")>
+<Assembly: AssemblyDescription("Enable MouseCursor in HackMud")>
 <Assembly: AssemblyCompany("")>
 <Assembly: AssemblyProduct("HackModMouse")>
 <Assembly: AssemblyCopyright("Copyright ©  2026")>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")>
 
-<Assembly: AssemblyVersion("1.1.0.0")>
-<Assembly: AssemblyFileVersion("1.1.0.0")>
+<Assembly: AssemblyVersion("1.2.0.0")>
+<Assembly: AssemblyFileVersion("1.2.0.0")>
