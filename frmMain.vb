@@ -14,7 +14,7 @@ Public Class frmMain
         AddHandler SysconfigureToolStripMenuItem.DropDown.Closing, AddressOf cmsTray_Closing
         SysconfigureToolStripMenuItem.DropDown.ShowItemToolTips = False
 
-        ApplyScaling()
+        'ApplyScaling()
 
         CursorMagic()
 
@@ -37,12 +37,29 @@ Public Class frmMain
 #End Region
 
 #Region "Scaling"
-    Private Sub ApplyScaling(Optional pt As Point = Nothing)
+    Public Sub ApplyScaling(Optional pt As Point = Nothing)
         Dim dpi As UInteger = 96
-        GetDpiForMonitor(MonitorFromPoint(New Point, 2), 0, dpi, dpi)
+        GetDpiForMonitor(MonitorFromPoint(pt, 2), 0, dpi, dpi)
         scaling = CSng(dpi) / 96.0!
-        setFont()
-        cmsTray.ImageScalingSize = New Size(16 * scaling, 16 * scaling)
+        Me.BeginInvoke(Sub()
+                           cmsTray.ImageScalingSize = New Size(CInt(16 * scaling), CInt(16 * scaling))
+
+                           ' Force full layout reset
+                           cmsTray.SuspendLayout()
+
+                           ' Reset cached layout
+                           cmsTray.AutoSize = False
+                           cmsTray.Width = 1 ' collapse first
+
+                           ' Update font AFTER scaling
+                           setFont()
+
+                           ' Re-enable autosize so it recalculates
+                           cmsTray.AutoSize = True
+
+                           cmsTray.ResumeLayout(True)
+                           cmsTray.PerformLayout()
+                       End Sub)
     End Sub
 #End Region
 
@@ -159,7 +176,13 @@ Public Class frmMain
         mH.UnhookMouse()
         Me.Close()
     End Sub
-
+    Private Sub trayIcon_MouseDown(sender As Object, e As MouseEventArgs) Handles trayIcon.MouseUp
+        If e.Button = MouseButtons.Right Then
+            ApplyScaling(Cursor.Position)
+            cmsTray.Tag = ToolStripDropDownDirection.AboveLeft
+            cmsTray.Show(Me, Me.PointToClient(Cursor.Position), ToolStripDropDownDirection.AboveLeft)
+        End If
+    End Sub
     Private Sub cmsTray_Opening(sender As ContextMenuStrip, e As CancelEventArgs) Handles cmsTray.Opening
 
         'this is needed to make DPI change message fire
@@ -227,17 +250,15 @@ Public Class frmMain
                 My.Settings.showcursor = sender.Checked
             Case LeftclickcompatToolStripMenuItem.Name
                 My.Settings.lcCompat = sender.Checked
-                'If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then mH.HookMouse()
             Case XmbclickToolStripMenuItem.Name
                 My.Settings.xmbclick = sender.Checked
-                'If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then mH.HookMouse()
             Case WheelScrollActivateToolStripMenuItem.Name
                 My.Settings.scrollActivate = sender.Checked
-                'If sender.Checked AndAlso mH.HookHandle = IntPtr.Zero Then mH.HookMouse()
         End Select
 
         'hook mouse if applicable 
         If mH.HookHandle = IntPtr.Zero AndAlso (My.Settings.lcCompat OrElse My.Settings.xmbclick OrElse My.Settings.scrollActivate) Then mH.HookMouse()
+
         'counter-intuitively the click event fires after the closed event
         Debug.Print("SysconfigureItem_Click")
 
@@ -276,7 +297,7 @@ Public Class frmMain
         SendMessage(hackMudHandle, WM_LBUTTONUP, 0, 0)
         Cursor.Position = curPos
 
-        'send esc
+        'send esc to clear input
         SendMessage(hackMudHandle, WM_KEYDOWN, Keys.Escape, 1) ' esc down
         SendMessage(hackMudHandle, WM_KEYUP, Keys.Escape, 1 << 31) ' esc up
 
@@ -357,6 +378,7 @@ Public Class frmMain
     Public Const SW_FORCEMINIMIZE = 11
     <Runtime.InteropServices.DllImport("user32.dll")>
     Private Shared Function ShowWindow(Hwnd As IntPtr, iCmdShow As Integer) As Integer : End Function
+
 
 #End Region
 

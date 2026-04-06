@@ -28,6 +28,7 @@ Namespace My
 
             e.BringToForeground = False
 
+            frmMain.ApplyScaling(Cursor.Position)
             cmsTray.Tag = ToolStripDropDownDirection.Default
             cmsTray.Show(Cursor.Position)
 
