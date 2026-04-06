@@ -35,7 +35,7 @@ Partial Class frmMain
         Me.SysconfigureToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.AutoBootToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CursorshowToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.LeftclickcompatToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.vncCompatToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.XmbclickToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.WheelScrollActivateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.GuiVfxBendToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -101,7 +101,7 @@ Partial Class frmMain
         '
         'SysconfigureToolStripMenuItem
         '
-        Me.SysconfigureToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AutoBootToolStripMenuItem, ToolStripSeparator4, Me.CursorshowToolStripMenuItem, Me.LeftclickcompatToolStripMenuItem, Me.XmbclickToolStripMenuItem, Me.WheelScrollActivateToolStripMenuItem, ToolStripSeparator3, Me.GuiVfxBendToolStripMenuItem})
+        Me.SysconfigureToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AutoBootToolStripMenuItem, ToolStripSeparator4, Me.CursorshowToolStripMenuItem, Me.vncCompatToolStripMenuItem, Me.XmbclickToolStripMenuItem, Me.WheelScrollActivateToolStripMenuItem, ToolStripSeparator3, Me.GuiVfxBendToolStripMenuItem})
         Me.SysconfigureToolStripMenuItem.Image = Global.HackModMouse.My.Resources.Resources.mud
         Me.SysconfigureToolStripMenuItem.Name = "SysconfigureToolStripMenuItem"
         Me.SysconfigureToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
@@ -121,12 +121,12 @@ Partial Class frmMain
         Me.CursorshowToolStripMenuItem.Text = "cursor.manage{show}"
         Me.CursorshowToolStripMenuItem.ToolTipText = "toggle showing cursor"
         '
-        'LeftclickcompatToolStripMenuItem
+        'vncCompatToolStripMenuItem
         '
-        Me.LeftclickcompatToolStripMenuItem.Name = "LeftclickcompatToolStripMenuItem"
-        Me.LeftclickcompatToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
-        Me.LeftclickcompatToolStripMenuItem.Text = "left.click{compat}"
-        Me.LeftclickcompatToolStripMenuItem.ToolTipText = "vnc compatibility mode to prevent dragbox"
+        Me.vncCompatToolStripMenuItem.Name = "vncCompatToolStripMenuItem"
+        Me.vncCompatToolStripMenuItem.Size = New System.Drawing.Size(191, 22)
+        Me.vncCompatToolStripMenuItem.Text = "left.click{vnc_compat}"
+        Me.vncCompatToolStripMenuItem.ToolTipText = "vnc compatibility mode to prevent dragbox"
         '
         'XmbclickToolStripMenuItem
         '
@@ -190,7 +190,7 @@ Partial Class frmMain
     Friend WithEvents XmbclickToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents SysbootToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents WheelScrollActivateToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents LeftclickcompatToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents vncCompatToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents GuiVfxBendToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents AutoBootToolStripMenuItem As ToolStripMenuItem
 End Class

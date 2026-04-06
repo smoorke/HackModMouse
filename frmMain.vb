@@ -280,7 +280,7 @@ Public Class frmMain
         AutoBootToolStripMenuItem.Checked = My.Settings.AutoBoot
         '-
         CursorshowToolStripMenuItem.Checked = My.Settings.showcursor
-        LeftclickcompatToolStripMenuItem.Checked = My.Settings.lcCompat
+        vncCompatToolStripMenuItem.Checked = My.Settings.lcCompat
         XmbclickToolStripMenuItem.Checked = My.Settings.xmbclick
         WheelScrollActivateToolStripMenuItem.Checked = My.Settings.scrollActivate
         '-
@@ -291,7 +291,7 @@ Public Class frmMain
     End Sub
 
     Private Sub SysconfigureItemToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles AutoBootToolStripMenuItem.Click, CursorshowToolStripMenuItem.Click,
-                                                            LeftclickcompatToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click, WheelScrollActivateToolStripMenuItem.Click
+                                                            vncCompatToolStripMenuItem.Click, XmbclickToolStripMenuItem.Click, WheelScrollActivateToolStripMenuItem.Click
         'toggle checkmark
         sender.Checked = Not sender.Checked
         'set settings 
@@ -300,7 +300,7 @@ Public Class frmMain
                 My.Settings.AutoBoot = sender.Checked
             Case CursorshowToolStripMenuItem.Name
                 My.Settings.showcursor = sender.Checked
-            Case LeftclickcompatToolStripMenuItem.Name
+            Case vncCompatToolStripMenuItem.Name
                 My.Settings.lcCompat = sender.Checked
             Case XmbclickToolStripMenuItem.Name
                 My.Settings.xmbclick = sender.Checked
